@@ -3,55 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galerie &ndash; m44.pictures</title>
+  <title>Galerie — m44.pictures</title>
+  <meta name="description" content="Portfolio von m44.pictures: Event, Hochzeiten, Portrait, Automobil, Architektur und Produktfotografie.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <span class="brand">m44pictures</span>
-      <div class="links">
-        <a href="index.html">Start</a>
-        <a href="leistungen.html">Preise &amp; Leistungen</a>
-        <a href="galerie.html" class="active">Galerie</a>
-        <a href="kontakt.html">Kontakt</a>
-        <a href="impressum.html">Impressum</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <h1>Portfolio</h1>
-    <div class="gallery">
-      <figure>
-        <img src="images/event.svg" alt="Event">
-        <figcaption>Event</figcaption>
-      </figure>
-      <figure>
-        <img src="images/hochzeiten.svg" alt="Hochzeiten">
-        <figcaption>Hochzeiten</figcaption>
-      </figure>
-      <figure>
-        <img src="images/portrait.svg" alt="Portrait">
-        <figcaption>Portrait</figcaption>
-      </figure>
-      <figure>
-        <img src="images/automobil.svg" alt="Automobil">
-        <figcaption>Automobil</figcaption>
-      </figure>
-      <figure>
-        <img src="images/architektur.svg" alt="Architektur">
-        <figcaption>Architektur</figcaption>
-      </figure>
-      <figure>
-        <img src="images/produktfotografie.svg" alt="Produktfotografie">
-        <figcaption>Produktfotografie</figcaption>
-      </figure>
+  <nav class="nav scrolled">
+    <a href="index.html" class="nav__brand">m44<span class="dot">.</span>pictures</a>
+    <div class="nav__links">
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html" class="active">Galerie</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
     </div>
-  </main>
+    <button class="nav__toggle" aria-label="Menü öffnen"><span></span><span></span><span></span></button>
+  </nav>
 
-  <footer>
-    <p>&copy; m44.pictures &ndash; Marius Henning, Eschwege</p>
+  <section class="section" style="padding-top:9rem">
+    <div class="reveal">
+      <span class="eyebrow">Portfolio</span>
+      <h1 class="section-title">Galerie</h1>
+      <div class="divider"></div>
+      <p class="section-lead" style="margin-top:1.4rem">Ein Auszug aus meiner Arbeit &ndash; klicke ein Bild an, um es gr&ouml;&szlig;er zu sehen.</p>
+    </div>
+
+    <div class="gallery reveal" style="margin-top:3rem">
+      <div class="gallery__item" data-cat="Event">
+        <img src="images/event.svg" alt="Event">
+        <div class="gallery__overlay"><span class="gallery__sub">Bühne &amp; Emotion</span><span class="gallery__cat">Event</span></div>
+      </div>
+      <div class="gallery__item" data-cat="Hochzeiten">
+        <img src="images/hochzeiten.svg" alt="Hochzeiten">
+        <div class="gallery__overlay"><span class="gallery__sub">Der große Tag</span><span class="gallery__cat">Hochzeiten</span></div>
+      </div>
+      <div class="gallery__item" data-cat="Portrait">
+        <img src="images/portrait.svg" alt="Portrait">
+        <div class="gallery__overlay"><span class="gallery__sub">Mensch &amp; Charakter</span><span class="gallery__cat">Portrait</span></div>
+      </div>
+      <div class="gallery__item" data-cat="Automobil">
+        <img src="images/automobil.svg" alt="Automobil">
+        <div class="gallery__overlay"><span class="gallery__sub">Form &amp; Bewegung</span><span class="gallery__cat">Automobil</span></div>
+      </div>
+      <div class="gallery__item" data-cat="Architektur">
+        <img src="images/architektur.svg" alt="Architektur">
+        <div class="gallery__overlay"><span class="gallery__sub">Raum &amp; Licht</span><span class="gallery__cat">Architektur</span></div>
+      </div>
+      <div class="gallery__item" data-cat="Produktfotografie">
+        <img src="images/produktfotografie.svg" alt="Produktfotografie">
+        <div class="gallery__overlay"><span class="gallery__sub">Detail &amp; Inszenierung</span><span class="gallery__cat">Produktfotografie</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="lightbox" role="dialog" aria-modal="true">
+    <span class="lightbox__close" aria-label="Schließen">&times;</span>
+    <img src="" alt="">
+    <div class="lightbox__cap"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__brand">m44<span class="dot">.</span>pictures</div>
+    <div class="footer__links">
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <p class="footer__copy">&copy; <span data-year>2026</span> m44.pictures &middot; Marius Henning &middot; Eschwege</p>
   </footer>
+
+  <script src="main.js"></script>
 </body>
 </html>

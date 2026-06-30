@@ -3,36 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kontakt &ndash; m44.pictures</title>
+  <title>Kontakt — m44.pictures</title>
+  <meta name="description" content="Kontakt zu m44.pictures – Marius Henning, Fotograf aus Eschwege. Jetzt Shooting anfragen.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <span class="brand">m44pictures</span>
-      <div class="links">
-        <a href="index.html">Start</a>
-        <a href="leistungen.html">Preise &amp; Leistungen</a>
-        <a href="galerie.html">Galerie</a>
-        <a href="kontakt.html" class="active">Kontakt</a>
-        <a href="impressum.html">Impressum</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <h1>Kontakt</h1>
-    <p>Sie haben Interesse an einem Shooting oder eine Frage? Melden Sie sich gerne!</p>
-    <div class="contact-info">
-      <p><strong>Marius Henning</strong></p>
-      <p>Schwarzer Weg, 37269 Eschwege</p>
-      <p>Telefon: <a href="tel:+491725229695">0172 5229695</a></p>
-      <p>E-Mail: <a href="mailto:m44pictures@gmail.com">m44pictures@gmail.com</a></p>
+  <nav class="nav scrolled">
+    <a href="index.html" class="nav__brand">m44<span class="dot">.</span>pictures</a>
+    <div class="nav__links">
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="kontakt.html" class="active">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
     </div>
-  </main>
+    <button class="nav__toggle" aria-label="Menü öffnen"><span></span><span></span><span></span></button>
+  </nav>
 
-  <footer>
-    <p>&copy; m44.pictures &ndash; Marius Henning, Eschwege</p>
+  <section class="section" style="padding-top:9rem">
+    <div class="reveal">
+      <span class="eyebrow">Kontakt</span>
+      <h1 class="section-title">Lass uns sprechen.</h1>
+      <div class="divider"></div>
+      <p class="section-lead" style="margin-top:1.4rem">Interesse an einem Shooting oder eine Frage? Melde dich gerne &ndash; ich freue mich auf deine Nachricht.</p>
+    </div>
+
+    <div class="contact-grid reveal" style="margin-top:3rem">
+      <div class="contact-card">
+        <div class="ic">✆</div>
+        <h3>Telefon</h3>
+        <a href="tel:+491725229695">0172 5229695</a>
+      </div>
+      <div class="contact-card">
+        <div class="ic">✉</div>
+        <h3>E-Mail</h3>
+        <a href="mailto:m44pictures@gmail.com">m44pictures@gmail.com</a>
+      </div>
+      <div class="contact-card">
+        <div class="ic">⌖</div>
+        <h3>Standort</h3>
+        <p>Marius Henning<br>Schwarzer Weg<br>37269 Eschwege</p>
+      </div>
+    </div>
+
+    <div class="reveal" style="text-align:center; margin-top:3.5rem">
+      <a href="mailto:m44pictures@gmail.com" class="btn btn--solid">E-Mail schreiben</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__brand">m44<span class="dot">.</span>pictures</div>
+    <div class="footer__links">
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <p class="footer__copy">&copy; <span data-year>2026</span> m44.pictures &middot; Marius Henning &middot; Eschwege</p>
   </footer>
+
+  <script src="main.js"></script>
 </body>
 </html>

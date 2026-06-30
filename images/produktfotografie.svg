@@ -1,5 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
-  <rect width="600" height="400" fill="#d8d4cc"/>
-  <text x="50%" y="48%" font-family="Arial" font-size="26" fill="#7a756c" text-anchor="middle">Produktfotografie</text>
-  <text x="50%" y="58%" font-family="Arial" font-size="14" fill="#9a948a" text-anchor="middle">Platzhalter &#8211; bitte durch echtes Foto ersetzen</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#23201b"/>
+      <stop offset="55%" stop-color="#16140f"/>
+      <stop offset="100%" stop-color="#0c0b0a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#c8a35c" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#c8a35c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#g)"/>
+  <rect width="800" height="1000" fill="url(#glow)"/>
+  <g fill="none" stroke="#c8a35c" stroke-width="3" opacity="0.85" transform="translate(400 360)">
+    <circle r="92"/>
+    <path d="M0,-92 L34,-30 L-34,-30 Z M92,0 L30,34 L30,-34 Z M0,92 L-34,30 L34,30 Z M-92,0 L-30,-34 L-30,34 Z"/>
+  </g>
+  <text x="400" y="560" font-family="Georgia, serif" font-size="64" fill="#ece9e3" text-anchor="middle">Produktfotografie</text>
+  <text x="400" y="610" font-family="Arial, sans-serif" font-size="22" letter-spacing="3" fill="#c8a35c" text-anchor="middle">Detail &amp; Inszenierung</text>
+  <text x="400" y="960" font-family="Arial, sans-serif" font-size="16" letter-spacing="2" fill="#6b675f" text-anchor="middle">PLATZHALTER &#183; ECHTES FOTO EINF&#220;GEN</text>
 </svg>

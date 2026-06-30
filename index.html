@@ -3,32 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>m44.pictures &ndash; Fotografie</title>
+  <title>m44.pictures — Fotografie aus Eschwege</title>
+  <meta name="description" content="m44.pictures – Fotografie für Hochzeiten, Events, Portraits, Automobil, Immobilien und Produkte. Entdecke die Schönheit im Detail.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <span class="brand">m44pictures</span>
-      <div class="links">
-        <a href="index.html" class="active">Start</a>
-        <a href="leistungen.html">Preise &amp; Leistungen</a>
-        <a href="galerie.html">Galerie</a>
-        <a href="kontakt.html">Kontakt</a>
-        <a href="impressum.html">Impressum</a>
-      </div>
-    </nav>
+  <nav class="nav">
+    <a href="index.html" class="nav__brand">m44<span class="dot">.</span>pictures</a>
+    <div class="nav__links">
+      <a href="index.html" class="active">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <button class="nav__toggle" aria-label="Menü öffnen"><span></span><span></span><span></span></button>
+  </nav>
+
+  <header class="hero">
+    <div class="hero__bg"></div>
+    <svg class="hero__aperture" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+      <circle cx="100" cy="100" r="78" stroke-width="3"/>
+      <path d="M100 22 L138 88 L62 88 Z M178 100 L112 138 L112 62 Z M100 178 L62 112 L138 112 Z M22 100 L88 62 L88 138 Z" stroke-width="3"/>
+    </svg>
+    <h1 class="hero__brand">m44.pictures</h1>
+    <p class="hero__slogan">&bdquo;Entdecke die Sch&ouml;nheit im Detail, durch meine Linse.&ldquo;</p>
+    <div class="hero__cta">
+      <a href="galerie.html" class="btn btn--solid">Galerie ansehen</a>
+      <a href="leistungen.html" class="btn">Preise &amp; Leistungen</a>
+    </div>
+    <div class="hero__scroll">Scroll<span></span></div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="logo">m44.pictures</div>
-      <p class="slogan">&bdquo;Entdecke die Sch&ouml;nheit im Detail, durch meine Linse.&ldquo;</p>
-    </section>
-  </main>
+  <section class="section">
+    <div class="reveal">
+      <span class="eyebrow">Willkommen</span>
+      <h2 class="section-title">Momente, die bleiben.</h2>
+      <div class="divider"></div>
+      <p class="section-lead" style="margin-top:1.6rem">
+        Ob der gro&szlig;e Tag, ein unvergessliches Event, ausdrucksstarke Portraits oder
+        faszinierende Fahrzeuge &ndash; ich halte fest, was z&auml;hlt. Mit geschultem Blick f&uuml;r
+        Details, nat&uuml;rlichem Licht und einer Leidenschaft f&uuml;r echte Emotionen.
+      </p>
+    </div>
 
-  <footer>
-    <p>&copy; m44.pictures &ndash; Marius Henning, Eschwege</p>
+    <div class="services reveal" style="margin-top:3rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); display:grid; gap:1.4rem;">
+      <div class="contact-card"><div class="ic">❤</div><h3>Hochzeiten</h3><p>Emotionale Aufnahmen vom Standesamt bis After-Wedding.</p></div>
+      <div class="contact-card"><div class="ic">✦</div><h3>Events</h3><p>Stimmung, Highlights und Gäste – professionell festgehalten.</p></div>
+      <div class="contact-card"><div class="ic">◐</div><h3>Portraits</h3><p>Natürlich, ausdrucksstark und zeitlos.</p></div>
+      <div class="contact-card"><div class="ic">◆</div><h3>Automobil &amp; mehr</h3><p>Fahrzeuge, Immobilien und Produkte ins beste Licht gerückt.</p></div>
+    </div>
+
+    <div class="reveal" style="text-align:center; margin-top:3.5rem">
+      <a href="kontakt.html" class="btn btn--solid">Jetzt anfragen</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__brand">m44<span class="dot">.</span>pictures</div>
+    <div class="footer__links">
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Preise &amp; Leistungen</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="kontakt.html">Kontakt</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <p class="footer__copy">&copy; <span data-year>2026</span> m44.pictures &middot; Marius Henning &middot; Eschwege</p>
   </footer>
+
+  <script src="main.js"></script>
 </body>
 </html>
