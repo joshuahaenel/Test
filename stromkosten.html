@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stromkosten-Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 20px;
+    }
+
+    /* ── Settings ── */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"], input[type="date"], input[type="text"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      color: #f1f5f9;
+      font-size: 0.95rem;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input:focus { border-color: #6366f1; }
+
+    /* ── Entry Form ── */
+    .entry-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    button {
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      white-space: nowrap;
+    }
+
+    button:hover { background: #4f46e5; }
+    button:active { transform: scale(.97); }
+
+    button.danger {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    button.danger:hover { background: #ef444422; }
+
+    /* ── Summary KPIs ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .kpi .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      line-height: 1.2;
+    }
+
+    .kpi .unit {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .kpi .label {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead th {
+      text-align: left;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 0 12px 10px;
+      border-bottom: 1px solid #334155;
+    }
+
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background: #ffffff08; }
+
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge-low  { background: #14532d44; color: #4ade80; border: 1px solid #16a34a44; }
+    .badge-mid  { background: #78350f44; color: #fbbf24; border: 1px solid #d9770644; }
+    .badge-high { background: #450a0a44; color: #f87171; border: 1px solid #dc262644; }
+
+    /* ── Bar chart ── */
+    .chart-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 120px;
+      padding-top: 10px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      gap: 4px;
+    }
+
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, #818cf8, #6366f1);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height .4s ease;
+      position: relative;
+    }
+
+    .bar:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .bar-label {
+      font-size: 0.65rem;
+      color: #64748b;
+      text-align: center;
+      word-break: break-all;
+    }
+
+    .empty {
+      text-align: center;
+      color: #475569;
+      padding: 40px;
+      font-size: 0.9rem;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 520px) {
+      .entry-row { grid-template-columns: 1fr; }
+      .kpi .value { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div>
+    <h1>⚡ Stromkosten-Tracker</h1>
+    <p class="subtitle">Wöchentliche Zählerstand-Erfassung & Kostenübersicht</p>
+  </div>
+
+  <!-- Settings -->
+  <div class="card">
+    <h2>Einstellungen</h2>
+    <div class="settings-grid">
+      <div>
+        <label>Arbeitspreis (ct/kWh)</label>
+        <input type="number" id="pricePerKwh" value="30.60" step="0.01" min="0" placeholder="z.B. 30.60" />
+      </div>
+      <div>
+        <label>Grundpreis (€/Monat)</label>
+        <input type="number" id="basePrice" value="17.90" step="0.01" min="0" placeholder="z.B. 17.90" />
+      </div>
+      <div>
+        <label>Akontobetrag (€/Monat)</label>
+        <input type="number" id="monthlyAkonto" value="80" step="1" min="0" placeholder="z.B. 80" />
+      </div>
+    </div>
+    <p class="hint">Einstellungen werden automatisch gespeichert.</p>
+  </div>
+
+  <!-- New Entry -->
+  <div class="card">
+    <h2>Zählerstand eintragen</h2>
+    <div class="entry-row">
+      <div>
+        <label>Datum</label>
+        <input type="date" id="entryDate" />
+      </div>
+      <div>
+        <label>Zählerstand (kWh)</label>
+        <input type="number" id="entryValue" placeholder="z.B. 12345" step="0.1" min="0" />
+      </div>
+      <button onclick="addEntry()">Eintragen</button>
+    </div>
+    <p id="entryError" style="color:#f87171;font-size:.82rem;margin-top:8px;display:none;"></p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="card">
+    <h2>Übersicht</h2>
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="empty" style="grid-column:1/-1">Noch keine Einträge vorhanden.</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card" id="chartCard" style="display:none">
+    <h2>Wöchentlicher Verbrauch (kWh)</h2>
+    <div class="chart-wrap" id="chart"></div>
+  </div>
+
+  <!-- History Table -->
+  <div class="card">
+    <h2>Verlauf</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Woche</th>
+            <th>Datum</th>
+            <th>Zählerstand</th>
+            <th>Verbrauch</th>
+            <th>Stromkosten</th>
+            <th>Gesamt*</th>
+            <th>Bewertung</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="8" class="empty">Noch keine Einträge vorhanden.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">* Stromkosten + anteiliger Grundpreis (7 Tage). Monatlicher Abschlag: <span id="akontoHint">–</span></p>
+  </div>
+</div>
+
+<script>
+  const STORE = 'stromtracker_v1';
+
+  // ── State ──────────────────────────────────────────────────────────
+  let state = {
+    pricePerKwh: 30.60, // ct
+    basePrice: 17.90,   // €/month
+    monthlyAkonto: 80,  // €/month
+    entries: []         // { id, date, value }
+  };
+
+  // ── Persistence ────────────────────────────────────────────────────
+  function save() {
+    state.pricePerKwh  = parseFloat(document.getElementById('pricePerKwh').value)  || 30;
+    state.basePrice     = parseFloat(document.getElementById('basePrice').value)     || 9;
+    state.monthlyAkonto = parseFloat(document.getElementById('monthlyAkonto').value) || 80;
+    localStorage.setItem(STORE, JSON.stringify(state));
+  }
+
+  function load() {
+    const raw = localStorage.getItem(STORE);
+    if (raw) state = JSON.parse(raw);
+    document.getElementById('pricePerKwh').value   = state.pricePerKwh;
+    document.getElementById('basePrice').value      = state.basePrice;
+    document.getElementById('monthlyAkonto').value  = state.monthlyAkonto;
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────
+  function fmt(n, dec = 2) {
+    return n.toLocaleString('de-DE', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+
+  function fmtDate(iso) {
+    const [y, m, d] = iso.split('-');
+    return `${d}.${m}.${y}`;
+  }
+
+  function weekLabel(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const jan1 = new Date(d.getFullYear(), 0, 1);
+    const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+    return `KW ${week}/${d.getFullYear()}`;
+  }
+
+  // ── Sorted entries with computed deltas ────────────────────────────
+  function computedRows() {
+    const sorted = [...state.entries].sort((a, b) => a.date.localeCompare(b.date));
+    return sorted.map((e, i) => {
+      const prev = sorted[i - 1];
+      const days  = prev ? (new Date(e.date) - new Date(prev.date)) / 86400000 : null;
+      const kwh   = prev ? e.value - prev.value : null;
+      const priceKwh  = state.pricePerKwh / 100;                 // €/kWh
+      const basePDay  = state.basePrice / 30;                    // €/day
+      const workCost  = kwh != null ? kwh * priceKwh : null;
+      const baseCost  = days != null ? days * basePDay : null;
+      const total     = workCost != null ? workCost + baseCost : null;
+      return { ...e, days, kwh, workCost, baseCost, total };
+    });
+  }
+
+  // ── Badge ──────────────────────────────────────────────────────────
+  function badge(kwh) {
+    if (kwh < 25)  return '<span class="badge badge-low">Niedrig</span>';
+    if (kwh < 50)  return '<span class="badge badge-mid">Mittel</span>';
+    return '<span class="badge badge-high">Hoch</span>';
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────
+  function render() {
+    const rows = computedRows();
+    renderKPIs(rows);
+    renderTable(rows);
+    renderChart(rows);
+    document.getElementById('akontoHint').textContent = fmt(state.monthlyAkonto) + ' €';
+  }
+
+  function renderKPIs(rows) {
+    const grid = document.getElementById('kpiGrid');
+    const withDelta = rows.filter(r => r.kwh != null);
+    if (withDelta.length === 0) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Noch keine Einträge vorhanden.</div>';
+      return;
+    }
+
+    const totalKwh   = withDelta.reduce((s, r) => s + r.kwh, 0);
+    const totalDays  = withDelta.reduce((s, r) => s + r.days, 0);
+    const totalCost  = withDelta.reduce((s, r) => s + r.total, 0);
+    const avgPerWeek = totalDays > 0 ? totalKwh / totalDays * 7 : 0;
+    const lastEntry  = rows[rows.length - 1];
+    const projection = avgPerWeek * 52 * (state.pricePerKwh / 100) + state.basePrice * 12;
+    const akontoYear = state.monthlyAkonto * 12;
+    const diff       = projection - akontoYear;
+
+    grid.innerHTML = `
+      <div class="kpi">
+        <div class="value">${fmt(totalKwh, 1)}</div>
+        <div class="unit">kWh</div>
+        <div class="label">Gesamtverbrauch</div>
+      </div>
+      <div class="kpi">
+        <div class="value">${fmt(avgPerWeek, 1)}</div>
+        <div class="unit">kWh/Woche</div>
+        <div class="label">Ø Wochenverbrauch</div>
+      </div>
+      <div class="kpi">
+        <div class="value">${fmt(totalCost)}</div>
+        <div class="unit">€</div>
+        <div class="label">Gesamtkosten (erfasst)</div>
+      </div>
+      <div class="kpi">
+        <div class="value">${fmt(projection)}</div>
+        <div class="unit">€/Jahr</div>
+        <div class="label">Hochrechnung Jahreskosten</div>
+      </div>
+      <div class="kpi" style="border-color:${diff > 0 ? '#dc2626' : '#16a34a'}44">
+        <div class="value" style="color:${diff > 0 ? '#f87171' : '#4ade80'}">${diff > 0 ? '+' : ''}${fmt(diff)}</div>
+        <div class="unit">€/Jahr</div>
+        <div class="label">Abweichung vom Akonto</div>
+      </div>
+      <div class="kpi">
+        <div class="value">${lastEntry ? fmt(lastEntry.value, 1) : '–'}</div>
+        <div class="unit">kWh</div>
+        <div class="label">Letzter Zählerstand</div>
+      </div>
+    `;
+  }
+
+  function renderTable(rows) {
+    const tbody = document.getElementById('historyBody');
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">Noch keine Einträge vorhanden.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = [...rows].reverse().map((r, i, arr) => `
+      <tr>
+        <td>${weekLabel(r.date)}</td>
+        <td>${fmtDate(r.date)}</td>
+        <td>${fmt(r.value, 1)} kWh</td>
+        <td>${r.kwh != null ? fmt(r.kwh, 1) + ' kWh' : '–'}</td>
+        <td>${r.workCost != null ? fmt(r.workCost) + ' €' : '–'}</td>
+        <td>${r.total != null ? fmt(r.total) + ' €' : '–'}</td>
+        <td>${r.kwh != null ? badge(r.kwh / (r.days / 7)) : '–'}</td>
+        <td><button class="danger" onclick="deleteEntry('${r.id}')">Löschen</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderChart(rows) {
+    const card  = document.getElementById('chartCard');
+    const chart = document.getElementById('chart');
+    const withDelta = rows.filter(r => r.kwh != null);
+    if (withDelta.length === 0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const maxKwh = Math.max(...withDelta.map(r => r.kwh));
+    chart.innerHTML = withDelta.map(r => {
+      const pct = maxKwh > 0 ? (r.kwh / maxKwh) * 100 : 0;
+      return `
+        <div class="bar-col">
+          <div class="bar" style="height:${pct}%" data-tip="${fmt(r.kwh, 1)} kWh"></div>
+          <div class="bar-label">${weekLabel(r.date).replace('/', '<br/>')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Actions ────────────────────────────────────────────────────────
+  function addEntry() {
+    const dateEl  = document.getElementById('entryDate');
+    const valueEl = document.getElementById('entryValue');
+    const errEl   = document.getElementById('entryError');
+    errEl.style.display = 'none';
+
+    const date  = dateEl.value;
+    const value = parseFloat(valueEl.value);
+
+    if (!date)           { showError('Bitte ein Datum eingeben.'); return; }
+    if (isNaN(value) || value < 0) { showError('Bitte einen gültigen Zählerstand eingeben.'); return; }
+
+    const existing = state.entries.find(e => e.date === date);
+    if (existing)        { showError('Für dieses Datum existiert bereits ein Eintrag.'); return; }
+
+    const prev = [...state.entries].sort((a, b) => a.date.localeCompare(b.date)).pop();
+    if (prev && value < prev.value) {
+      showError(`Der Zählerstand muss größer als der letzte Wert (${fmt(prev.value, 1)} kWh) sein.`);
+      return;
+    }
+
+    state.entries.push({ id: crypto.randomUUID(), date, value });
+    save();
+    render();
+    valueEl.value = '';
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Eintrag wirklich löschen?')) return;
+    state.entries = state.entries.filter(e => e.id !== id);
+    save();
+    render();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('entryError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // ── Settings auto-save ─────────────────────────────────────────────
+  ['pricePerKwh', 'basePrice', 'monthlyAkonto'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => { save(); render(); });
+  });
+
+  // ── Init ───────────────────────────────────────────────────────────
+  document.getElementById('entryDate').value = new Date().toISOString().slice(0, 10);
+  load();
+  render();
+</script>
+</body>
+</html>
