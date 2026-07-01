@@ -85,6 +85,10 @@ h1, h2, h3 {
   display: flex; align-items: center; gap: .6rem;
 }
 .nav__brand .dot { color: var(--gold); }
+.brand-mark { width: 30px; height: 30px; color: var(--gold); flex: 0 0 auto; transition: transform .6s var(--ease); }
+.nav__brand:hover .brand-mark { transform: rotate(60deg); }
+.footer__brand { display: inline-flex; align-items: center; gap: .6rem; }
+.footer__brand .brand-mark { width: 26px; height: 26px; }
 .nav__links { display: flex; gap: 2.2rem; align-items: center; }
 .nav__links a {
   position: relative; font-size: .82rem; letter-spacing: 1.5px;
@@ -128,8 +132,7 @@ h1, h2, h3 {
     repeating-linear-gradient(115deg, rgba(255,255,255,.015) 0 2px, transparent 2px 26px);
   z-index: -1;
 }
-.hero__aperture { width: clamp(110px, 16vw, 180px); margin-bottom: 2.2rem; animation: spin 60s linear infinite; }
-.hero__aperture path, .hero__aperture circle { stroke: var(--gold); }
+.hero__aperture { width: clamp(110px, 16vw, 180px); margin-bottom: 2.2rem; color: var(--gold); animation: spin 60s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hero__brand {
