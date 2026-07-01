@@ -1,0 +1,9 @@
+# Core assistant has no required dependencies (text mode works out of the box).
+
+# Optional, only needed for --voice mode:
+SpeechRecognition>=3.10
+pyttsx3>=2.90
+PyAudio>=0.2.13
+
+# Optional, for running tests:
+pytest>=7.0
