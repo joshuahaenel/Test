@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stromkosten-Tracker</title>
+  <title>Energie-Tracker</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,57 +15,65 @@
       padding: 24px 16px;
     }
 
-    h1 {
-      text-align: center;
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #f8fafc;
-      margin-bottom: 6px;
-    }
+    h1 { text-align: center; font-size: 1.7rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+    .subtitle { text-align: center; color: #94a3b8; font-size: 0.88rem; margin-bottom: 28px; }
 
-    .subtitle {
-      text-align: center;
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-bottom: 32px;
-    }
+    .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
+    /* ── Tabs ── */
+    .tab-bar {
       display: flex;
-      flex-direction: column;
-      gap: 24px;
+      gap: 4px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 6px;
     }
 
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 10px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { background: #0f172a55; color: #cbd5e1; transform: none; }
+
+    .tab-btn.active { color: #fff; }
+
+    .tab-btn .tab-icon { font-size: 1.1rem; }
+
+    /* ── Cards ── */
     .card {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 16px;
-      padding: 24px;
+      padding: 22px;
     }
 
     .card h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: .05em;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-    }
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
 
-    label {
-      display: block;
-      font-size: 0.82rem;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
+    label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; }
 
     input[type="number"], input[type="date"] {
       width: 100%;
@@ -73,159 +81,91 @@
       border: 1px solid #475569;
       border-radius: 8px;
       color: #f1f5f9;
-      font-size: 0.95rem;
-      padding: 10px 12px;
+      font-size: 0.93rem;
+      padding: 9px 11px;
       outline: none;
       transition: border-color .2s;
     }
 
-    input:focus { border-color: #6366f1; }
+    input:focus { border-color: var(--accent); }
 
-    .entry-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 12px;
-      align-items: end;
-    }
+    .entry-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 11px; align-items: end; }
 
     button {
-      background: #6366f1;
+      background: var(--accent);
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.95rem;
+      padding: 10px 18px;
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background .2s, transform .1s;
+      transition: filter .2s, transform .1s;
       white-space: nowrap;
     }
 
-    button:hover { background: #4f46e5; }
+    button:hover { filter: brightness(1.15); }
     button:active { transform: scale(.97); }
 
     button.danger {
       background: transparent;
       border: 1px solid #ef4444;
       color: #ef4444;
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      padding: 5px 11px;
+      font-size: 0.78rem;
+      filter: none;
     }
 
-    button.danger:hover { background: #ef444422; }
+    button.danger:hover { background: #ef444418; }
 
     /* ── KPIs ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 14px;
-    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; }
 
     .kpi {
       background: #0f172a;
       border: 1px solid #334155;
       border-radius: 12px;
-      padding: 16px 14px;
+      padding: 14px 12px;
       text-align: center;
     }
 
-    .kpi .value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #a5b4fc;
-      line-height: 1.2;
-    }
+    .kpi .value { font-size: 1.45rem; font-weight: 700; color: var(--accent); line-height: 1.2; }
+    .kpi .unit  { font-size: 0.73rem; color: #64748b; margin-top: 3px; }
+    .kpi .lbl   { font-size: 0.78rem; color: #94a3b8; margin-top: 5px; }
 
-    .kpi .unit { font-size: 0.75rem; color: #64748b; margin-top: 3px; }
-    .kpi .label { font-size: 0.8rem; color: #94a3b8; margin-top: 5px; }
-
-    /* ── Akonto balance ── */
+    /* ── Balance ── */
     .balance-card {
       background: #0f172a;
-      border-radius: 14px;
-      padding: 20px 24px;
+      border-radius: 12px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .balance-main {
-      flex: 1;
-      min-width: 160px;
-    }
-
-    .balance-value {
-      font-size: 2.4rem;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .balance-label { font-size: 0.82rem; color: #94a3b8; margin-top: 6px; }
-
-    .balance-details {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
-
-    .balance-details span { color: #cbd5e1; }
-
-    /* ── SVG line chart ── */
-    .linechart-wrap {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .linechart-wrap svg {
-      width: 100%;
-      height: 200px;
-      overflow: visible;
-    }
-
-    .chart-legend {
-      display: flex;
       gap: 20px;
       flex-wrap: wrap;
-      margin-top: 12px;
-      font-size: 0.8rem;
-      color: #94a3b8;
     }
 
-    .legend-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 5px;
-      vertical-align: middle;
-    }
+    .balance-main { flex: 1; min-width: 140px; }
+    .balance-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+    .balance-label { font-size: 0.8rem; color: #94a3b8; margin-top: 5px; }
+
+    .balance-details { display: flex; flex-direction: column; gap: 7px; font-size: 0.83rem; color: #94a3b8; }
+    .balance-details span { color: #cbd5e1; }
+
+    /* ── SVG chart ── */
+    .linechart-wrap { width: 100%; overflow: hidden; }
+    .linechart-wrap svg { width: 100%; height: 190px; overflow: visible; }
+
+    .chart-legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; font-size: 0.78rem; color: #94a3b8; }
+    .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 
     /* ── Bar chart ── */
-    .chart-wrap {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      height: 130px;
-      padding-top: 10px;
-    }
+    .chart-wrap { display: flex; align-items: flex-end; gap: 5px; height: 120px; padding-top: 8px; }
 
-    .bar-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      height: 100%;
-      gap: 4px;
-    }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 3px; }
 
     .bar {
       width: 100%;
-      background: linear-gradient(180deg, #818cf8, #6366f1);
+      background: linear-gradient(180deg, var(--accent-light), var(--accent));
       border-radius: 4px 4px 0 0;
       min-height: 4px;
       position: relative;
@@ -234,43 +174,42 @@
     .bar:hover::after {
       content: attr(data-tip);
       position: absolute;
-      bottom: calc(100% + 6px);
+      bottom: calc(100% + 5px);
       left: 50%;
       transform: translateX(-50%);
       background: #1e293b;
       border: 1px solid #475569;
       color: #f1f5f9;
-      padding: 4px 8px;
+      padding: 3px 8px;
       border-radius: 6px;
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       white-space: nowrap;
       pointer-events: none;
       z-index: 10;
     }
 
-    .bar-label { font-size: 0.62rem; color: #64748b; text-align: center; word-break: break-all; }
+    .bar-label { font-size: 0.6rem; color: #64748b; text-align: center; word-break: break-all; }
 
     /* ── Table ── */
     .table-wrap { overflow-x: auto; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
 
     thead th {
       text-align: left;
       color: #64748b;
       font-weight: 600;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: .05em;
-      padding: 0 10px 10px;
+      padding: 0 9px 9px;
       border-bottom: 1px solid #334155;
     }
 
     tbody tr { transition: background .15s; }
-    tbody tr:hover { background: #ffffff08; }
+    tbody tr:hover { background: #ffffff07; }
 
     tbody td {
-      padding: 11px 10px;
+      padding: 10px 9px;
       border-bottom: 1px solid #1e293b;
       color: #cbd5e1;
       vertical-align: middle;
@@ -278,56 +217,39 @@
 
     tbody tr:last-child td { border-bottom: none; }
 
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 0.76rem;
-      font-weight: 600;
-    }
-
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 600; }
     .badge-low  { background: #14532d44; color: #4ade80; border: 1px solid #16a34a44; }
     .badge-mid  { background: #78350f44; color: #fbbf24; border: 1px solid #d9770644; }
     .badge-high { background: #450a0a44; color: #f87171; border: 1px solid #dc262644; }
 
-    .empty { text-align: center; color: #475569; padding: 36px; font-size: 0.9rem; }
+    .empty { text-align: center; color: #475569; padding: 32px; font-size: 0.88rem; }
+    .hint  { font-size: 0.77rem; color: #64748b; margin-top: 9px; }
 
-    .hint { font-size: 0.79rem; color: #64748b; margin-top: 10px; }
-
-    /* ── Akonto payment log ── */
-    .akonto-log {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 16px;
-    }
+    /* ── Payment log ── */
+    .akonto-log { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
 
     .akonto-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       background: #0f172a;
       border-radius: 8px;
-      padding: 8px 12px;
+      padding: 7px 11px;
       color: #94a3b8;
     }
 
-    .akonto-row .ak-date { color: #cbd5e1; min-width: 90px; }
-    .akonto-row .ak-amount { color: #4ade80; font-weight: 600; margin-left: auto; }
+    .ak-date   { color: #cbd5e1; min-width: 85px; }
+    .ak-amount { color: #4ade80; font-weight: 600; margin-left: auto; }
 
-    .akonto-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      align-items: end;
-      margin-top: 4px;
-    }
+    .akonto-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-top: 4px; }
 
     @media (max-width: 560px) {
       .entry-row, .akonto-form { grid-template-columns: 1fr; }
-      .kpi .value { font-size: 1.25rem; }
-      .balance-value { font-size: 1.8rem; }
+      .kpi .value { font-size: 1.2rem; }
+      .balance-value { font-size: 1.7rem; }
+      .tab-btn { font-size: 0.82rem; padding: 9px 6px; }
+      .tab-btn .tab-icon { font-size: 1rem; }
     }
   </style>
 </head>
@@ -335,25 +257,47 @@
 
 <div class="container">
   <div>
-    <h1>⚡ Stromkosten-Tracker</h1>
+    <h1>Energie-Tracker</h1>
     <p class="subtitle">Wöchentliche Zählerstand-Erfassung & Kostenübersicht</p>
   </div>
 
-  <!-- Settings -->
+  <!-- Tab-Leiste -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn" onclick="switchTab('dashboard')" id="tab-dashboard">
+      <span class="tab-icon">📊</span> Dashboard
+    </button>
+    <button class="tab-btn active" onclick="switchTab('strom')" id="tab-strom">
+      <span class="tab-icon">⚡</span> Strom
+    </button>
+    <button class="tab-btn" onclick="switchTab('wasser')" id="tab-wasser">
+      <span class="tab-icon">💧</span> Wasser
+    </button>
+    <button class="tab-btn" onclick="switchTab('gas')" id="tab-gas">
+      <span class="tab-icon">🔥</span> Gas
+    </button>
+  </div>
+
+  <!-- Dashboard (wird per JS eingeblendet) -->
+  <div id="dashboardPanel" style="display:none; flex-direction:column; gap:22px;"></div>
+
+  <!-- Hauptinhalt (Strom/Wasser/Gas) -->
+  <div id="mainPanel" style="display:contents">
+
+  <!-- Einstellungen -->
   <div class="card">
     <h2>Einstellungen</h2>
     <div class="settings-grid">
       <div>
-        <label>Arbeitspreis (ct/kWh)</label>
-        <input type="number" id="pricePerKwh" value="30.60" step="0.01" min="0" />
+        <label id="lbl-price">Arbeitspreis (ct/kWh)</label>
+        <input type="number" id="pricePerUnit" step="0.01" min="0" onchange="saveAndRender()" />
       </div>
       <div>
         <label>Grundpreis (€/Monat)</label>
-        <input type="number" id="basePrice" value="17.90" step="0.01" min="0" />
+        <input type="number" id="basePrice" step="0.01" min="0" onchange="saveAndRender()" />
       </div>
       <div>
         <label>Abschlag (€/Monat)</label>
-        <input type="number" id="monthlyAkonto" value="80" step="1" min="0" />
+        <input type="number" id="monthlyAkonto" step="1" min="0" onchange="saveAndRender()" />
       </div>
     </div>
     <p class="hint">Einstellungen werden automatisch gespeichert.</p>
@@ -368,12 +312,12 @@
         <input type="date" id="entryDate" />
       </div>
       <div>
-        <label>Zählerstand (kWh)</label>
-        <input type="number" id="entryValue" placeholder="z.B. 12345" step="0.1" min="0" />
+        <label id="lbl-unit">Zählerstand (kWh)</label>
+        <input type="number" id="entryValue" step="0.1" min="0" placeholder="z.B. 12345" />
       </div>
       <button onclick="addEntry()">Eintragen</button>
     </div>
-    <p id="entryError" style="color:#f87171;font-size:.82rem;margin-top:8px;display:none;"></p>
+    <p id="entryError" style="color:#f87171;font-size:.8rem;margin-top:8px;display:none;"></p>
   </div>
 
   <!-- KPIs -->
@@ -385,7 +329,7 @@
   </div>
 
   <!-- Abschlag-Konto -->
-  <div class="card" id="balanceCard">
+  <div class="card">
     <h2>Abschlag-Konto</h2>
     <div class="balance-card">
       <div class="balance-main">
@@ -394,9 +338,8 @@
       </div>
       <div class="balance-details" id="balanceDetails"></div>
     </div>
-
-    <div style="margin-top:20px;">
-      <label style="margin-bottom:10px;display:block;">Abschlagszahlung erfassen</label>
+    <div style="margin-top:18px;">
+      <label style="margin-bottom:8px;display:block;">Abschlagszahlung erfassen</label>
       <div class="akonto-form">
         <div>
           <label>Datum</label>
@@ -409,27 +352,26 @@
         <button onclick="addPayment()">Buchen</button>
       </div>
     </div>
-
     <div class="akonto-log" id="akontoLog"></div>
   </div>
 
-  <!-- Kostenentwicklung (Line Chart) -->
+  <!-- Kostenentwicklung -->
   <div class="card" id="costChartCard" style="display:none">
     <h2>Kostenentwicklung</h2>
     <div class="linechart-wrap">
-      <svg id="costSvg" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
+      <svg id="costSvg" viewBox="0 0 800 190" preserveAspectRatio="none"></svg>
     </div>
     <div class="chart-legend">
-      <div><span class="legend-dot" style="background:#6366f1"></span>Wöchentliche Kosten (€)</div>
+      <div><span class="legend-dot" id="leg-weekly"></span>Wöchentliche Kosten (€)</div>
       <div><span class="legend-dot" style="background:#f59e0b"></span>Kumulierte Kosten (€)</div>
-      <div><span class="legend-dot" style="background:#22d3ee; border-radius:0; height:2px; width:14px; display:inline-block; vertical-align:middle; margin-right:5px;"></span>Gezahlte Abschläge (€)</div>
+      <div><span style="display:inline-block;width:14px;height:2px;background:#22d3ee;vertical-align:middle;margin-right:5px;"></span>Gezahlte Abschläge (€)</div>
     </div>
   </div>
 
   <!-- Verbrauch Balkendiagramm -->
-  <div class="card" id="chartCard" style="display:none">
-    <h2>Wöchentlicher Verbrauch (kWh)</h2>
-    <div class="chart-wrap" id="chart"></div>
+  <div class="card" id="barChartCard" style="display:none">
+    <h2 id="barChartTitle">Wöchentlicher Verbrauch (kWh)</h2>
+    <div class="chart-wrap" id="barChart"></div>
   </div>
 
   <!-- Verlauf -->
@@ -443,7 +385,7 @@
             <th>Datum</th>
             <th>Zählerstand</th>
             <th>Verbrauch</th>
-            <th>Stromkosten</th>
+            <th>Kosten</th>
             <th>Gesamt*</th>
             <th>Bewertung</th>
             <th></th>
@@ -454,39 +396,225 @@
         </tbody>
       </table>
     </div>
-    <p class="hint">* Stromkosten + anteiliger Grundpreis. Monatlicher Abschlag: <span id="akontoHint">–</span></p>
+    <p class="hint">* Verbrauchskosten + anteiliger Grundpreis. Monatlicher Abschlag: <span id="akontoHint">–</span></p>
   </div>
+
+  </div><!-- end mainPanel -->
 </div>
 
 <script>
-  const STORE = 'stromtracker_v2';
-
-  let state = {
-    pricePerKwh:  30.60,
-    basePrice:    17.90,
-    monthlyAkonto: 80,
-    entries:   [],   // { id, date, value }
-    payments:  []    // { id, date, amount }
+  // ── Utility config ─────────────────────────────────────────────────
+  const UTILS = {
+    strom:  { label: 'Strom',  icon: '⚡', unit: 'kWh', accent: '#6366f1', accentLight: '#818cf8', priceLabel: 'Arbeitspreis (ct/kWh)', defaults: { pricePerUnit: 30.60, basePrice: 17.90, monthlyAkonto: 80  }, badgeLow: 25, badgeMid: 50 },
+    wasser: { label: 'Wasser', icon: '💧', unit: 'm³',  accent: '#06b6d4', accentLight: '#22d3ee', priceLabel: 'Preis (ct/m³)',          defaults: { pricePerUnit: 200,   basePrice: 10,    monthlyAkonto: 30  }, badgeLow: 1,  badgeMid: 3  },
+    gas:    { label: 'Gas',    icon: '🔥', unit: 'm³',  accent: '#f59e0b', accentLight: '#fbbf24', priceLabel: 'Arbeitspreis (ct/kWh)',  defaults: { pricePerUnit: 8,     basePrice: 12,    monthlyAkonto: 60  }, badgeLow: 10, badgeMid: 25 },
   };
+
+  const STORE = 'energietracker_v1';
+  let activeTab = 'strom';
+
+  // ── State per utility ──────────────────────────────────────────────
+  let states = {};
+  Object.keys(UTILS).forEach(k => {
+    states[k] = { ...UTILS[k].defaults, entries: [], payments: [] };
+  });
 
   // ── Persistence ────────────────────────────────────────────────────
   function save() {
-    state.pricePerKwh   = parseFloat(document.getElementById('pricePerKwh').value)   || 30.60;
-    state.basePrice     = parseFloat(document.getElementById('basePrice').value)      || 17.90;
-    state.monthlyAkonto = parseFloat(document.getElementById('monthlyAkonto').value)  || 80;
-    localStorage.setItem(STORE, JSON.stringify(state));
+    const cfg = UTILS[activeTab];
+    states[activeTab].pricePerUnit   = parseFloat(document.getElementById('pricePerUnit').value)   || cfg.defaults.pricePerUnit;
+    states[activeTab].basePrice      = parseFloat(document.getElementById('basePrice').value)       || cfg.defaults.basePrice;
+    states[activeTab].monthlyAkonto  = parseFloat(document.getElementById('monthlyAkonto').value)   || cfg.defaults.monthlyAkonto;
+    localStorage.setItem(STORE, JSON.stringify(states));
   }
 
-  function load() {
+  function saveAndRender() { save(); render(); }
+
+  function loadAll() {
     const raw = localStorage.getItem(STORE);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      state = { ...state, ...saved };
-      if (!state.payments) state.payments = [];
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    Object.keys(UTILS).forEach(k => {
+      if (saved[k]) {
+        states[k] = { ...states[k], ...saved[k] };
+        if (!states[k].payments) states[k].payments = [];
+      }
+    });
+  }
+
+  // ── Tab switching ──────────────────────────────────────────────────
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = '';
+      b.style.color = '';
+    });
+    document.getElementById('tab-' + tab).classList.add('active');
+
+    const isDash = tab === 'dashboard';
+    document.getElementById('dashboardPanel').style.display = isDash ? 'flex' : 'none';
+    document.getElementById('mainPanel').style.display      = isDash ? 'none' : 'contents';
+
+    if (isDash) {
+      const dbtn = document.getElementById('tab-dashboard');
+      dbtn.style.background = '#334155';
+      dbtn.style.color = '#f1f5f9';
+      renderDashboard();
+    } else {
+      applyAccent();
+      loadSettingsToForm();
+      render();
     }
-    document.getElementById('pricePerKwh').value   = state.pricePerKwh;
-    document.getElementById('basePrice').value      = state.basePrice;
-    document.getElementById('monthlyAkonto').value  = state.monthlyAkonto;
+  }
+
+  function applyAccent() {
+    const cfg = UTILS[activeTab];
+    document.documentElement.style.setProperty('--accent',       cfg.accent);
+    document.documentElement.style.setProperty('--accent-light', cfg.accentLight);
+    const activeBtn = document.getElementById('tab-' + activeTab);
+    activeBtn.style.background = cfg.accent + '22';
+    activeBtn.style.color = cfg.accent;
+  }
+
+  // ── Dashboard ──────────────────────────────────────────────────────
+  function dashRows(tab) {
+    const s      = states[tab];
+    const sorted = [...s.entries].sort((a, b) => a.date.localeCompare(b.date));
+    return sorted.map((e, i) => {
+      const prev     = sorted[i - 1];
+      const days     = prev ? (new Date(e.date) - new Date(prev.date)) / 86400000 : null;
+      const usage    = prev ? e.value - prev.value : null;
+      const unitCost = s.pricePerUnit / 100;
+      const baseDay  = s.basePrice / 30;
+      const workCost = usage != null ? usage * unitCost : null;
+      const baseCost = days  != null ? days  * baseDay  : null;
+      const total    = workCost != null ? workCost + baseCost : null;
+      return { ...e, days, usage, workCost, baseCost, total };
+    });
+  }
+
+  function renderDashboard() {
+    const panel = document.getElementById('dashboardPanel');
+
+    // Total Gesamtkosten aller Sparten
+    let allCostTotal = 0, allPaidTotal = 0, allProjTotal = 0;
+
+    const spartenCards = Object.keys(UTILS).map(tab => {
+      const cfg   = UTILS[tab];
+      const s     = states[tab];
+      const rows  = dashRows(tab);
+      const wd    = rows.filter(r => r.usage != null);
+
+      const totalUsage  = wd.reduce((a, r) => a + r.usage, 0);
+      const totalDays   = wd.reduce((a, r) => a + r.days, 0);
+      const totalCost   = wd.reduce((a, r) => a + r.total, 0);
+      const totalPaid   = s.payments.reduce((a, p) => a + p.amount, 0);
+      const avgPerWeek  = totalDays > 0 ? totalUsage / totalDays * 7 : 0;
+      const projection  = avgPerWeek * 52 * (s.pricePerUnit / 100) + s.basePrice * 12;
+      const balance     = totalPaid - totalCost;
+      const lastEntry   = rows[rows.length - 1];
+
+      allCostTotal += totalCost;
+      allPaidTotal += totalPaid;
+      allProjTotal += projection;
+
+      const balColor = balance >= 0 ? '#4ade80' : '#f87171';
+      const diffYear = projection - s.monthlyAkonto * 12;
+      const dcol = diffYear > 0 ? '#f87171' : '#4ade80';
+
+      // mini bar chart (last 8 weeks)
+      const last8 = wd.slice(-8);
+      const maxU  = last8.length ? Math.max(...last8.map(r => r.usage)) : 0;
+      const miniBars = last8.map(r => {
+        const h = maxU > 0 ? Math.round((r.usage / maxU) * 40) : 4;
+        return `<div style="flex:1;height:${h}px;background:${cfg.accent};border-radius:3px 3px 0 0;min-height:4px;" title="${fmt(r.usage,2)} ${cfg.unit}"></div>`;
+      }).join('');
+
+      return `
+        <div class="card" style="border-color:${cfg.accent}33; cursor:pointer;" onclick="switchTab('${tab}')">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <span style="font-size:1.5rem;">${cfg.icon}</span>
+            <span style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">${cfg.label}</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:${cfg.accent};background:${cfg.accent}18;padding:3px 9px;border-radius:99px;border:1px solid ${cfg.accent}33;">Details →</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
+            <div class="kpi" style="--accent:${cfg.accent}">
+              <div class="value">${wd.length ? fmt(totalUsage, 1) : '–'}</div>
+              <div class="unit">${cfg.unit}</div>
+              <div class="lbl">Gesamtverbrauch</div>
+            </div>
+            <div class="kpi" style="--accent:${cfg.accent}">
+              <div class="value">${wd.length ? fmt(totalCost) : '–'}</div>
+              <div class="unit">€</div>
+              <div class="lbl">Kosten (erfasst)</div>
+            </div>
+            <div class="kpi" style="--accent:${cfg.accent}">
+              <div class="value" style="color:${balColor}">${wd.length ? fmt(Math.abs(balance)) : '–'}</div>
+              <div class="unit">€</div>
+              <div class="lbl">${balance >= 0 ? 'Guthaben' : 'Rückstand'}</div>
+            </div>
+            <div class="kpi" style="--accent:${cfg.accent}">
+              <div class="value" style="color:${dcol}">${wd.length ? (diffYear>0?'+':'') + fmt(diffYear) : '–'}</div>
+              <div class="unit">€/Jahr</div>
+              <div class="lbl">vs. Abschlag</div>
+            </div>
+          </div>
+          ${last8.length ? `
+            <div style="display:flex;align-items:flex-end;gap:3px;height:44px;padding-top:4px;">
+              ${miniBars}
+            </div>
+            <div style="font-size:0.7rem;color:#475569;margin-top:4px;">Letzte ${last8.length} Wochen Verbrauch</div>
+          ` : '<div style="color:#475569;font-size:0.82rem;">Noch keine Daten erfasst</div>'}
+          ${lastEntry ? `<div style="font-size:0.78rem;color:#64748b;margin-top:10px;">Letzter Zählerstand: <span style="color:#cbd5e1">${fmt(lastEntry.value,2)} ${cfg.unit}</span></div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    const allBalance = allPaidTotal - allCostTotal;
+    const allBalCol  = allBalance >= 0 ? '#4ade80' : '#f87171';
+
+    panel.innerHTML = `
+      <!-- Gesamtübersicht -->
+      <div class="card" style="border-color:#334155">
+        <h2>Gesamtübersicht – alle Sparten</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+          <div class="kpi">
+            <div class="value">${fmt(allCostTotal)}</div>
+            <div class="unit">€</div>
+            <div class="lbl">Gesamtkosten (erfasst)</div>
+          </div>
+          <div class="kpi">
+            <div class="value">${fmt(allPaidTotal)}</div>
+            <div class="unit">€</div>
+            <div class="lbl">Abschläge gezahlt</div>
+          </div>
+          <div class="kpi" style="border-color:${allBalCol}33">
+            <div class="value" style="color:${allBalCol}">${allBalance >= 0 ? '+' : ''}${fmt(allBalance)}</div>
+            <div class="unit">€</div>
+            <div class="lbl">${allBalance >= 0 ? 'Gesamt-Guthaben' : 'Gesamt-Rückstand'}</div>
+          </div>
+          <div class="kpi">
+            <div class="value">${fmt(allProjTotal)}</div>
+            <div class="unit">€/Jahr</div>
+            <div class="lbl">Hochrechnung gesamt</div>
+          </div>
+        </div>
+      </div>
+      <!-- Sparten-Karten -->
+      ${spartenCards}
+    `;
+  }
+
+  function loadSettingsToForm() {
+    const cfg = UTILS[activeTab];
+    const s   = states[activeTab];
+    document.getElementById('lbl-price').textContent    = cfg.priceLabel;
+    document.getElementById('lbl-unit').textContent     = `Zählerstand (${cfg.unit})`;
+    document.getElementById('barChartTitle').textContent = `Wöchentlicher Verbrauch (${cfg.unit})`;
+    document.getElementById('pricePerUnit').value  = s.pricePerUnit;
+    document.getElementById('basePrice').value     = s.basePrice;
+    document.getElementById('monthlyAkonto').value = s.monthlyAkonto;
   }
 
   // ── Helpers ────────────────────────────────────────────────────────
@@ -506,217 +634,186 @@
     return `KW ${week}/${d.getFullYear()}`;
   }
 
-  // ── Computed rows ──────────────────────────────────────────────────
   function computedRows() {
-    const sorted = [...state.entries].sort((a, b) => a.date.localeCompare(b.date));
+    const s      = states[activeTab];
+    const sorted = [...s.entries].sort((a, b) => a.date.localeCompare(b.date));
     return sorted.map((e, i) => {
-      const prev      = sorted[i - 1];
-      const days      = prev ? (new Date(e.date) - new Date(prev.date)) / 86400000 : null;
-      const kwh       = prev ? e.value - prev.value : null;
-      const priceKwh  = state.pricePerKwh / 100;
-      const basePDay  = state.basePrice / 30;
-      const workCost  = kwh  != null ? kwh * priceKwh : null;
-      const baseCost  = days != null ? days * basePDay : null;
-      const total     = workCost != null ? workCost + baseCost : null;
-      return { ...e, days, kwh, workCost, baseCost, total };
+      const prev     = sorted[i - 1];
+      const days     = prev ? (new Date(e.date) - new Date(prev.date)) / 86400000 : null;
+      const usage    = prev ? e.value - prev.value : null;
+      const unitCost = s.pricePerUnit / 100;
+      const baseDay  = s.basePrice / 30;
+      const workCost = usage != null ? usage * unitCost : null;
+      const baseCost = days  != null ? days  * baseDay  : null;
+      const total    = workCost != null ? workCost + baseCost : null;
+      return { ...e, days, usage, workCost, baseCost, total };
     });
   }
 
-  function badge(kwh) {
-    if (kwh < 25) return '<span class="badge badge-low">Niedrig</span>';
-    if (kwh < 50) return '<span class="badge badge-mid">Mittel</span>';
+  function badge(usagePerWeek) {
+    const cfg = UTILS[activeTab];
+    if (usagePerWeek < cfg.badgeLow) return '<span class="badge badge-low">Niedrig</span>';
+    if (usagePerWeek < cfg.badgeMid) return '<span class="badge badge-mid">Mittel</span>';
     return '<span class="badge badge-high">Hoch</span>';
   }
 
   // ── Render ─────────────────────────────────────────────────────────
   function render() {
     const rows = computedRows();
-    renderKPIs(rows);
-    renderBalance(rows);
-    renderCostChart(rows);
-    renderBarChart(rows);
-    renderTable(rows);
-    renderPaymentLog();
-    document.getElementById('akontoHint').textContent = fmt(state.monthlyAkonto) + ' €';
+    const cfg  = UTILS[activeTab];
+    const s    = states[activeTab];
+
+    renderKPIs(rows, cfg, s);
+    renderBalance(rows, s);
+    renderCostChart(rows, cfg, s);
+    renderBarChart(rows, cfg);
+    renderTable(rows, cfg);
+    renderPaymentLog(s);
+    document.getElementById('akontoHint').textContent = fmt(s.monthlyAkonto) + ' €';
+    document.getElementById('leg-weekly').style.background = cfg.accent;
   }
 
-  // ── KPIs ──────────────────────────────────────────────────────────
-  function renderKPIs(rows) {
+  function renderKPIs(rows, cfg, s) {
     const grid      = document.getElementById('kpiGrid');
-    const withDelta = rows.filter(r => r.kwh != null);
+    const withDelta = rows.filter(r => r.usage != null);
     if (withDelta.length === 0) {
       grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Noch keine Einträge vorhanden.</div>';
       return;
     }
-
-    const totalKwh   = withDelta.reduce((s, r) => s + r.kwh, 0);
-    const totalDays  = withDelta.reduce((s, r) => s + r.days, 0);
-    const totalCost  = withDelta.reduce((s, r) => s + r.total, 0);
-    const avgPerWeek = totalDays > 0 ? totalKwh / totalDays * 7 : 0;
-    const lastEntry  = rows[rows.length - 1];
-    const projection = avgPerWeek * 52 * (state.pricePerKwh / 100) + state.basePrice * 12;
-    const akontoYear = state.monthlyAkonto * 12;
-    const diff       = projection - akontoYear;
+    const totalUsage  = withDelta.reduce((a, r) => a + r.usage, 0);
+    const totalDays   = withDelta.reduce((a, r) => a + r.days,  0);
+    const totalCost   = withDelta.reduce((a, r) => a + r.total, 0);
+    const avgPerWeek  = totalDays > 0 ? totalUsage / totalDays * 7 : 0;
+    const lastEntry   = rows[rows.length - 1];
+    const projection  = avgPerWeek * 52 * (s.pricePerUnit / 100) + s.basePrice * 12;
+    const akontoYear  = s.monthlyAkonto * 12;
+    const diff        = projection - akontoYear;
 
     grid.innerHTML = `
       <div class="kpi">
-        <div class="value">${fmt(totalKwh, 1)}</div>
-        <div class="unit">kWh</div>
-        <div class="label">Gesamtverbrauch</div>
+        <div class="value">${fmt(totalUsage, 1)}</div>
+        <div class="unit">${cfg.unit}</div>
+        <div class="lbl">Gesamtverbrauch</div>
       </div>
       <div class="kpi">
         <div class="value">${fmt(avgPerWeek, 1)}</div>
-        <div class="unit">kWh/Woche</div>
-        <div class="label">Ø Wochenverbrauch</div>
+        <div class="unit">${cfg.unit}/Woche</div>
+        <div class="lbl">Ø Wochenverbrauch</div>
       </div>
       <div class="kpi">
         <div class="value">${fmt(totalCost)}</div>
         <div class="unit">€</div>
-        <div class="label">Kosten (erfasst)</div>
+        <div class="lbl">Kosten (erfasst)</div>
       </div>
       <div class="kpi">
         <div class="value">${fmt(projection)}</div>
         <div class="unit">€/Jahr</div>
-        <div class="label">Hochrechnung Jahr</div>
+        <div class="lbl">Hochrechnung Jahr</div>
       </div>
       <div class="kpi" style="border-color:${diff > 0 ? '#dc2626' : '#16a34a'}55">
         <div class="value" style="color:${diff > 0 ? '#f87171' : '#4ade80'}">${diff > 0 ? '+' : ''}${fmt(diff)}</div>
         <div class="unit">€/Jahr</div>
-        <div class="label">vs. Abschlag/Jahr</div>
+        <div class="lbl">vs. Abschlag/Jahr</div>
       </div>
       <div class="kpi">
         <div class="value">${lastEntry ? fmt(lastEntry.value, 1) : '–'}</div>
-        <div class="unit">kWh</div>
-        <div class="label">Letzter Zählerstand</div>
+        <div class="unit">${cfg.unit}</div>
+        <div class="lbl">Letzter Zählerstand</div>
       </div>
     `;
   }
 
-  // ── Abschlag-Konto ────────────────────────────────────────────────
-  function renderBalance(rows) {
-    const withDelta  = rows.filter(r => r.kwh != null);
-    const totalCost  = withDelta.reduce((s, r) => s + r.total, 0);
-    const totalPaid  = state.payments.reduce((s, p) => s + p.amount, 0);
-    const balance    = totalPaid - totalCost;
+  function renderBalance(rows, s) {
+    const withDelta = rows.filter(r => r.usage != null);
+    const totalCost = withDelta.reduce((a, r) => a + r.total, 0);
+    const totalPaid = s.payments.reduce((a, p) => a + p.amount, 0);
+    const balance   = totalPaid - totalCost;
 
-    const valEl    = document.getElementById('balanceValue');
-    const labelEl  = document.getElementById('balanceLabel');
-    const detailEl = document.getElementById('balanceDetails');
-
-    valEl.textContent   = fmt(Math.abs(balance)) + ' €';
-    valEl.style.color   = balance >= 0 ? '#4ade80' : '#f87171';
-    labelEl.textContent = balance >= 0 ? 'Guthaben (Überzahlung)' : 'Rückstand (Nachzahlung droht)';
-
-    detailEl.innerHTML = `
+    document.getElementById('balanceValue').textContent   = fmt(Math.abs(balance)) + ' €';
+    document.getElementById('balanceValue').style.color   = balance >= 0 ? '#4ade80' : '#f87171';
+    document.getElementById('balanceLabel').textContent   = balance >= 0 ? 'Guthaben (Überzahlung)' : 'Rückstand (Nachzahlung droht)';
+    document.getElementById('balanceDetails').innerHTML = `
       <div>Gezahlte Abschläge: <span>${fmt(totalPaid)} €</span></div>
       <div>Aufgelaufene Kosten: <span>${fmt(totalCost)} €</span></div>
       <div>Differenz: <span style="color:${balance >= 0 ? '#4ade80' : '#f87171'}">${balance >= 0 ? '+' : ''}${fmt(balance)} €</span></div>
     `;
   }
 
-  // ── Kostenentwicklung SVG Line Chart ─────────────────────────────
-  function renderCostChart(rows) {
-    const card = document.getElementById('costChartCard');
-    const svg  = document.getElementById('costSvg');
-    const withDelta = rows.filter(r => r.kwh != null);
-
+  function renderCostChart(rows, cfg, s) {
+    const card      = document.getElementById('costChartCard');
+    const svg       = document.getElementById('costSvg');
+    const withDelta = rows.filter(r => r.usage != null);
     if (withDelta.length < 2) { card.style.display = 'none'; return; }
     card.style.display = 'block';
 
-    const W = 800, H = 200, PAD = { top: 20, right: 20, bottom: 30, left: 10 };
-    const iW = W - PAD.left - PAD.right;
-    const iH = H - PAD.top  - PAD.bottom;
+    const W = 800, H = 190, P = { t: 20, r: 20, b: 28, l: 10 };
+    const iW = W - P.l - P.r, iH = H - P.t - P.b;
 
-    // cumulative costs
     let cum = 0;
-    const points = withDelta.map((r, i) => {
-      cum += r.total;
-      return { i, weekly: r.total, cum, label: weekLabel(r.date) };
-    });
+    const pts = withDelta.map((r, i) => { cum += r.total; return { i, weekly: r.total, cum }; });
+    const maxVal  = Math.max(...pts.map(p => p.cum));
+    const xS = i => P.l + (i / (pts.length - 1)) * iW;
+    const yS = v => P.t + iH - (v / maxVal) * iH;
 
-    const maxVal = Math.max(...points.map(p => p.cum));
-    const xScale = i  => PAD.left + (i / (points.length - 1)) * iW;
-    const yScale = v  => PAD.top  + iH - (v / maxVal) * iH;
+    const wPath    = pts.map((p, i) => `${i===0?'M':'L'}${xS(i)},${yS(p.weekly)}`).join(' ');
+    const cPath    = pts.map((p, i) => `${i===0?'M':'L'}${xS(i)},${yS(p.cum)}`).join(' ');
+    const fillPath = cPath + ` L${xS(pts.length-1)},${P.t+iH} L${xS(0)},${P.t+iH} Z`;
 
-    const weeklyPath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xScale(i)},${yScale(p.weekly)}`).join(' ');
-    const cumPath    = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xScale(i)},${yScale(p.cum)}`).join(' ');
+    const totalPaid = s.payments.reduce((a, p) => a + p.amount, 0);
+    const payY      = totalPaid > 0 ? yS(Math.min(totalPaid, maxVal)) : null;
 
-    // cumulative fill
-    const fillPath = cumPath + ` L${xScale(points.length-1)},${PAD.top+iH} L${xScale(0)},${PAD.top+iH} Z`;
-
-    // payment line (horizontal dashes for total paid so far)
-    const totalPaid = state.payments.reduce((s, p) => s + p.amount, 0);
-    const payY      = totalPaid > 0 && totalPaid <= maxVal * 1.5 ? yScale(Math.min(totalPaid, maxVal)) : null;
-
-    // dots & tooltips
-    const dots = points.map((p, i) => `
-      <circle cx="${xScale(i)}" cy="${yScale(p.cum)}" r="4" fill="#f59e0b" stroke="#0f172a" stroke-width="2">
-        <title>${p.label}: ${fmt(p.weekly)} € / kumuliert ${fmt(p.cum)} €</title>
-      </circle>
-      <circle cx="${xScale(i)}" cy="${yScale(p.weekly)}" r="3.5" fill="#6366f1" stroke="#0f172a" stroke-width="2">
-        <title>${p.label}: ${fmt(p.weekly)} €</title>
-      </circle>
+    const dots = pts.map((p, i) => `
+      <circle cx="${xS(i)}" cy="${yS(p.cum)}"    r="4"   fill="#f59e0b" stroke="#0f172a" stroke-width="2"><title>kumuliert ${fmt(p.cum)} €</title></circle>
+      <circle cx="${xS(i)}" cy="${yS(p.weekly)}" r="3.5" fill="${cfg.accent}" stroke="#0f172a" stroke-width="2"><title>${weekLabel(withDelta[i].date)}: ${fmt(p.weekly)} €</title></circle>
     `).join('');
 
-    // x labels (show max 8)
-    const step  = Math.ceil(points.length / 8);
-    const xlbls = points.filter((_, i) => i % step === 0 || i === points.length - 1).map(p => `
-      <text x="${xScale(p.i)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#64748b">${weekLabel(rows.filter(r=>r.kwh!=null)[p.i].date).split('/')[0]}</text>
-    `).join('');
+    const step  = Math.ceil(pts.length / 8);
+    const xlbls = pts.filter((_, i) => i % step === 0 || i === pts.length - 1).map(p =>
+      `<text x="${xS(p.i)}" y="${H-4}" text-anchor="middle" font-size="10" fill="#64748b">${weekLabel(withDelta[p.i].date).split('/')[0]}</text>`
+    ).join('');
 
     svg.innerHTML = `
       <defs>
-        <linearGradient id="cumGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25"/>
+        <linearGradient id="cGrad_${activeTab}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.22"/>
           <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
         </linearGradient>
       </defs>
-      <!-- grid lines -->
-      ${[0.25, 0.5, 0.75, 1].map(t => `
-        <line x1="${PAD.left}" y1="${yScale(maxVal*t)}" x2="${W-PAD.right}" y2="${yScale(maxVal*t)}"
-              stroke="#334155" stroke-width="1" stroke-dasharray="4,4"/>
-        <text x="${PAD.left}" y="${yScale(maxVal*t)-4}" font-size="9" fill="#475569">${fmt(maxVal*t,0)} €</text>
+      ${[.25,.5,.75,1].map(t=>`
+        <line x1="${P.l}" y1="${yS(maxVal*t)}" x2="${W-P.r}" y2="${yS(maxVal*t)}" stroke="#334155" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="${P.l}" y="${yS(maxVal*t)-4}" font-size="9" fill="#475569">${fmt(maxVal*t,0)} €</text>
       `).join('')}
-      <!-- fill -->
-      <path d="${fillPath}" fill="url(#cumGrad)"/>
-      <!-- cumulative line -->
-      <path d="${cumPath}" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-      <!-- weekly bars (as thin lines for clarity) -->
-      <path d="${weeklyPath}" fill="none" stroke="#6366f1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,3"/>
-      <!-- payment line -->
+      <path d="${fillPath}" fill="url(#cGrad_${activeTab})"/>
+      <path d="${cPath}"    fill="none" stroke="#f59e0b"      stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${wPath}"    fill="none" stroke="${cfg.accent}" stroke-width="2"   stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,3"/>
       ${payY != null ? `
-        <line x1="${PAD.left}" y1="${payY}" x2="${W-PAD.right}" y2="${payY}" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
-        <text x="${W-PAD.right-4}" y="${payY-5}" text-anchor="end" font-size="10" fill="#22d3ee">${fmt(totalPaid)} € gezahlt</text>
+        <line x1="${P.l}" y1="${payY}" x2="${W-P.r}" y2="${payY}" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
+        <text x="${W-P.r-4}" y="${payY-5}" text-anchor="end" font-size="10" fill="#22d3ee">${fmt(totalPaid)} € gezahlt</text>
       ` : ''}
-      <!-- dots -->
-      ${dots}
-      <!-- x labels -->
-      ${xlbls}
+      ${dots}${xlbls}
     `;
   }
 
-  // ── Bar Chart (Verbrauch) ──────────────────────────────────────────
-  function renderBarChart(rows) {
-    const card  = document.getElementById('chartCard');
-    const chart = document.getElementById('chart');
-    const withDelta = rows.filter(r => r.kwh != null);
+  function renderBarChart(rows, cfg) {
+    const card      = document.getElementById('barChartCard');
+    const chart     = document.getElementById('barChart');
+    const withDelta = rows.filter(r => r.usage != null);
     if (withDelta.length === 0) { card.style.display = 'none'; return; }
     card.style.display = 'block';
 
-    const maxKwh = Math.max(...withDelta.map(r => r.kwh));
+    const maxU = Math.max(...withDelta.map(r => r.usage));
     chart.innerHTML = withDelta.map(r => {
-      const pct = maxKwh > 0 ? (r.kwh / maxKwh) * 100 : 0;
+      const pct = maxU > 0 ? (r.usage / maxU) * 100 : 0;
       return `
         <div class="bar-col">
-          <div class="bar" style="height:${pct}%" data-tip="${fmt(r.kwh, 1)} kWh"></div>
+          <div class="bar" style="height:${pct}%" data-tip="${fmt(r.usage, 2)} ${cfg.unit}"></div>
           <div class="bar-label">${weekLabel(r.date).replace('/', '<br/>')}</div>
         </div>
       `;
     }).join('');
   }
 
-  // ── Table ─────────────────────────────────────────────────────────
-  function renderTable(rows) {
+  function renderTable(rows, cfg) {
     const tbody = document.getElementById('historyBody');
     if (rows.length === 0) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty">Noch keine Einträge vorhanden.</td></tr>';
@@ -726,20 +823,19 @@
       <tr>
         <td>${weekLabel(r.date)}</td>
         <td>${fmtDate(r.date)}</td>
-        <td>${fmt(r.value, 1)} kWh</td>
-        <td>${r.kwh   != null ? fmt(r.kwh, 1)     + ' kWh' : '–'}</td>
-        <td>${r.workCost != null ? fmt(r.workCost) + ' €'   : '–'}</td>
-        <td>${r.total != null ? fmt(r.total)       + ' €'   : '–'}</td>
-        <td>${r.kwh   != null ? badge(r.kwh / (r.days / 7)) : '–'}</td>
+        <td>${fmt(r.value, 2)} ${cfg.unit}</td>
+        <td>${r.usage    != null ? fmt(r.usage, 2)    + ' ' + cfg.unit : '–'}</td>
+        <td>${r.workCost != null ? fmt(r.workCost)    + ' €' : '–'}</td>
+        <td>${r.total    != null ? fmt(r.total)        + ' €' : '–'}</td>
+        <td>${r.usage    != null ? badge(r.usage / (r.days / 7)) : '–'}</td>
         <td><button class="danger" onclick="deleteEntry('${r.id}')">Löschen</button></td>
       </tr>
     `).join('');
   }
 
-  // ── Payment Log ───────────────────────────────────────────────────
-  function renderPaymentLog() {
+  function renderPaymentLog(s) {
     const log = document.getElementById('akontoLog');
-    const sorted = [...state.payments].sort((a, b) => b.date.localeCompare(a.date));
+    const sorted = [...s.payments].sort((a, b) => b.date.localeCompare(a.date));
     if (sorted.length === 0) { log.innerHTML = ''; return; }
     log.innerHTML = sorted.map(p => `
       <div class="akonto-row">
@@ -751,7 +847,7 @@
     `).join('');
   }
 
-  // ── Actions ───────────────────────────────────────────────────────
+  // ── Actions ────────────────────────────────────────────────────────
   function addEntry() {
     const dateEl  = document.getElementById('entryDate');
     const valueEl = document.getElementById('entryValue');
@@ -760,28 +856,26 @@
 
     const date  = dateEl.value;
     const value = parseFloat(valueEl.value);
+    const s     = states[activeTab];
 
-    if (!date)  { showError('Bitte ein Datum eingeben.'); return; }
-    if (isNaN(value) || value < 0) { showError('Bitte einen gültigen Zählerstand eingeben.'); return; }
+    if (!date)                      { showError('Bitte ein Datum eingeben.'); return; }
+    if (isNaN(value) || value < 0)  { showError('Bitte einen gültigen Zählerstand eingeben.'); return; }
+    if (s.entries.find(e => e.date === date)) { showError('Für dieses Datum existiert bereits ein Eintrag.'); return; }
 
-    if (state.entries.find(e => e.date === date)) {
-      showError('Für dieses Datum existiert bereits ein Eintrag.'); return;
-    }
-
-    const prev = [...state.entries].sort((a, b) => a.date.localeCompare(b.date)).pop();
+    const prev = [...s.entries].sort((a, b) => a.date.localeCompare(b.date)).pop();
     if (prev && value < prev.value) {
-      showError(`Zählerstand muss größer als der letzte Wert (${fmt(prev.value, 1)} kWh) sein.`);
+      showError(`Zählerstand muss ≥ letztem Wert (${fmt(prev.value, 2)} ${UTILS[activeTab].unit}) sein.`);
       return;
     }
 
-    state.entries.push({ id: crypto.randomUUID(), date, value });
+    s.entries.push({ id: crypto.randomUUID(), date, value });
     save(); render();
     valueEl.value = '';
   }
 
   function deleteEntry(id) {
     if (!confirm('Eintrag wirklich löschen?')) return;
-    state.entries = state.entries.filter(e => e.id !== id);
+    states[activeTab].entries = states[activeTab].entries.filter(e => e.id !== id);
     save(); render();
   }
 
@@ -789,14 +883,14 @@
     const date   = document.getElementById('akDate').value;
     const amount = parseFloat(document.getElementById('akAmount').value);
     if (!date || isNaN(amount) || amount <= 0) return;
-    state.payments.push({ id: crypto.randomUUID(), date, amount });
+    states[activeTab].payments.push({ id: crypto.randomUUID(), date, amount });
     save(); render();
     document.getElementById('akAmount').value = '';
   }
 
   function deletePayment(id) {
     if (!confirm('Zahlung wirklich löschen?')) return;
-    state.payments = state.payments.filter(p => p.id !== id);
+    states[activeTab].payments = states[activeTab].payments.filter(p => p.id !== id);
     save(); render();
   }
 
@@ -806,17 +900,12 @@
     el.style.display = 'block';
   }
 
-  // ── Settings auto-save ────────────────────────────────────────────
-  ['pricePerKwh', 'basePrice', 'monthlyAkonto'].forEach(id => {
-    document.getElementById(id).addEventListener('change', () => { save(); render(); });
-  });
-
   // ── Init ──────────────────────────────────────────────────────────
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('entryDate').value = today;
   document.getElementById('akDate').value    = today;
-  load();
-  render();
+  loadAll();
+  switchTab('dashboard');
 </script>
 </body>
 </html>
