@@ -274,6 +274,33 @@ h1, h2, h3 {
 .legal a { color: var(--gold); }
 
 /* ===========================================================
+   INSTAGRAM
+   =========================================================== */
+.insta { text-align: center; }
+.insta__handle {
+  display: inline-flex; align-items: center; gap: .6rem;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--gold-soft);
+  margin: .4rem 0 1.8rem;
+}
+.insta__handle svg { width: 26px; height: 26px; }
+.insta__grid {
+  display: grid; gap: .9rem; margin: 2.4rem 0;
+  grid-template-columns: repeat(6, 1fr);
+}
+.insta__tile {
+  position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 10px;
+  border: 1px solid var(--line); display: block;
+}
+.insta__tile img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.82) saturate(.95); transition: transform 1s var(--ease), filter .5s; }
+.insta__tile:hover img { transform: scale(1.1); filter: brightness(1) saturate(1.05); }
+.insta__tile::after {
+  content: '⊹'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.6rem; opacity: 0; background: rgba(200,163,92,.18); transition: opacity .4s var(--ease);
+}
+.insta__tile:hover::after { opacity: 1; }
+@media (max-width: 820px) { .insta__grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ===========================================================
    FOOTER
    =========================================================== */
 .footer {
@@ -285,6 +312,14 @@ h1, h2, h3 {
 .footer__links { display: flex; gap: 1.6rem; justify-content: center; flex-wrap: wrap; margin: 1.4rem 0; }
 .footer__links a { font-size: .78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); transition: color .3s; }
 .footer__links a:hover { color: var(--gold); }
+.footer__social { display: flex; justify-content: center; gap: 1rem; margin: .4rem 0 1.4rem; }
+.footer__social a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--line); color: var(--muted); transition: all .35s var(--ease);
+}
+.footer__social a:hover { color: #14110d; background: var(--gold); border-color: var(--gold); transform: translateY(-3px); }
+.footer__social svg { width: 20px; height: 20px; }
 .footer__copy { color: var(--muted); font-size: .8rem; opacity: .7; }
 
 /* ===========================================================
