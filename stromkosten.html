@@ -353,6 +353,10 @@
         <label>Abschlag (€/Monat)</label>
         <input type="number" id="monthlyAkonto" step="1" min="0" onchange="saveAndRender()" />
       </div>
+      <div>
+        <label>Mein Anteil (%)</label>
+        <input type="number" id="myShare" step="1" min="0" max="100" onchange="saveAndRender()" />
+      </div>
     </div>
     <p class="hint">Einstellungen werden automatisch gespeichert.</p>
   </div>
@@ -379,6 +383,17 @@
     <h2>Übersicht</h2>
     <div class="kpi-grid" id="kpiGrid">
       <div class="empty" style="grid-column:1/-1">Noch keine Einträge vorhanden.</div>
+    </div>
+  </div>
+
+  <!-- Kostenaufteilung -->
+  <div class="card" id="splitCard" style="display:none">
+    <h2>Kostenaufteilung</h2>
+    <div style="display:flex; align-items:center; gap:32px; flex-wrap:wrap;">
+      <div style="flex-shrink:0;">
+        <svg id="splitPie" width="160" height="160" viewBox="0 0 160 160"></svg>
+      </div>
+      <div id="splitLegend" style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:14px;"></div>
     </div>
   </div>
 
@@ -459,9 +474,9 @@
 <script>
   // ── Utility config ─────────────────────────────────────────────────
   const UTILS = {
-    strom:  { label: 'Strom',  icon: '⚡', unit: 'kWh', accent: '#6366f1', accentLight: '#818cf8', priceLabel: 'Arbeitspreis (ct/kWh)', defaults: { pricePerUnit: 30.60, basePrice: 17.90, monthlyAkonto: 80  }, badgeLow: 25, badgeMid: 50 },
-    wasser: { label: 'Wasser', icon: '💧', unit: 'm³',  accent: '#06b6d4', accentLight: '#22d3ee', priceLabel: 'Preis (ct/m³)',          defaults: { pricePerUnit: 200,   basePrice: 10,    monthlyAkonto: 30  }, badgeLow: 1,  badgeMid: 3  },
-    gas:    { label: 'Gas',    icon: '🔥', unit: 'm³',  accent: '#f59e0b', accentLight: '#fbbf24', priceLabel: 'Arbeitspreis (ct/kWh)',  defaults: { pricePerUnit: 8,     basePrice: 12,    monthlyAkonto: 60  }, badgeLow: 10, badgeMid: 25 },
+    strom:  { label: 'Strom',  icon: '⚡', unit: 'kWh', accent: '#6366f1', accentLight: '#818cf8', priceLabel: 'Arbeitspreis (ct/kWh)', defaults: { pricePerUnit: 30.60, basePrice: 17.90, monthlyAkonto: 80, myShare: 60 }, badgeLow: 25, badgeMid: 50 },
+    wasser: { label: 'Wasser', icon: '💧', unit: 'm³',  accent: '#06b6d4', accentLight: '#22d3ee', priceLabel: 'Preis (ct/m³)',          defaults: { pricePerUnit: 200,   basePrice: 10,    monthlyAkonto: 30, myShare: 50 }, badgeLow: 1,  badgeMid: 3  },
+    gas:    { label: 'Gas',    icon: '🔥', unit: 'm³',  accent: '#f59e0b', accentLight: '#fbbf24', priceLabel: 'Arbeitspreis (ct/kWh)',  defaults: { pricePerUnit: 8,     basePrice: 12,    monthlyAkonto: 60, myShare: 50 }, badgeLow: 10, badgeMid: 25 },
   };
 
   const STORE = 'energietracker_v1';
@@ -479,6 +494,7 @@
     states[activeTab].pricePerUnit   = parseFloat(document.getElementById('pricePerUnit').value)   || cfg.defaults.pricePerUnit;
     states[activeTab].basePrice      = parseFloat(document.getElementById('basePrice').value)       || cfg.defaults.basePrice;
     states[activeTab].monthlyAkonto  = parseFloat(document.getElementById('monthlyAkonto').value)   || cfg.defaults.monthlyAkonto;
+    states[activeTab].myShare        = Math.min(100, Math.max(0, parseFloat(document.getElementById('myShare').value) || cfg.defaults.myShare));
     localStorage.setItem(STORE, JSON.stringify(states));
     updateLastSaveInfo();
   }
@@ -621,7 +637,12 @@
             </div>
             <div style="font-size:0.7rem;color:#475569;margin-top:4px;">Letzte ${last8.length} Wochen Verbrauch</div>
           ` : '<div style="color:#475569;font-size:0.82rem;">Noch keine Daten erfasst</div>'}
-          ${lastEntry ? `<div style="font-size:0.78rem;color:#64748b;margin-top:10px;">Letzter Zählerstand: <span style="color:#cbd5e1">${fmt(lastEntry.value,2)} ${cfg.unit}</span></div>` : ''}
+          ${wd.length ? `
+            <div style="display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:0.8rem;">
+              <div><span style="color:#94a3b8;">Ich (${s.myShare ?? 50}%): </span><strong style="color:${cfg.accent}">${fmt(totalCost * (s.myShare ?? 50) / 100)} €</strong></div>
+              <div><span style="color:#94a3b8;">Schwester (${100 - (s.myShare ?? 50)}%): </span><strong style="color:#e879f9">${fmt(totalCost * (100 - (s.myShare ?? 50)) / 100)} €</strong></div>
+            </div>` : ''}
+          ${lastEntry ? `<div style="font-size:0.78rem;color:#64748b;margin-top:8px;">Letzter Zählerstand: <span style="color:#cbd5e1">${fmt(lastEntry.value,2)} ${cfg.unit}</span></div>` : ''}
         </div>
       `;
     }).join('');
@@ -670,6 +691,7 @@
     document.getElementById('pricePerUnit').value  = s.pricePerUnit;
     document.getElementById('basePrice').value     = s.basePrice;
     document.getElementById('monthlyAkonto').value = s.monthlyAkonto;
+    document.getElementById('myShare').value       = s.myShare ?? cfg.defaults.myShare;
   }
 
   // ── Helpers ────────────────────────────────────────────────────────
@@ -719,6 +741,7 @@
     const s    = states[activeTab];
 
     renderKPIs(rows, cfg, s);
+    renderSplitChart(rows, cfg, s);
     renderBalance(rows, s);
     renderCostChart(rows, cfg, s);
     renderBarChart(rows, cfg);
@@ -774,6 +797,67 @@
         <div class="value">${lastEntry ? fmt(lastEntry.value, 1) : '–'}</div>
         <div class="unit">${cfg.unit}</div>
         <div class="lbl">Letzter Zählerstand</div>
+      </div>
+    `;
+  }
+
+  // ── Kostenaufteilung Kreisdiagramm ────────────────────────────────
+  function renderSplitChart(rows, cfg, s) {
+    const card      = document.getElementById('splitCard');
+    const withDelta = rows.filter(r => r.usage != null);
+    if (withDelta.length === 0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const totalCost = withDelta.reduce((a, r) => a + r.total, 0);
+    const myPct     = (s.myShare ?? 60);
+    const herPct    = 100 - myPct;
+    const myAmt     = totalCost * myPct / 100;
+    const herAmt    = totalCost * herPct / 100;
+
+    // SVG donut pie
+    const cx = 80, cy = 80, r = 64, ir = 36;
+    function arc(pct, startAngle) {
+      const angle  = pct / 100 * 2 * Math.PI;
+      const end    = startAngle + angle;
+      const x1 = cx + r  * Math.sin(startAngle), y1 = cy - r  * Math.cos(startAngle);
+      const x2 = cx + r  * Math.sin(end),         y2 = cy - r  * Math.cos(end);
+      const ix1= cx + ir * Math.sin(startAngle), iy1= cy - ir * Math.cos(startAngle);
+      const ix2= cx + ir * Math.sin(end),         iy2= cy - ir * Math.cos(end);
+      const lg = angle > Math.PI ? 1 : 0;
+      return `M${x1},${y1} A${r},${r} 0 ${lg} 1 ${x2},${y2} L${ix2},${iy2} A${ir},${ir} 0 ${lg} 0 ${ix1},${iy1} Z`;
+    }
+
+    const myColor  = cfg.accent;
+    const herColor = '#e879f9';
+    const gap      = 0.03; // gap between slices in radians
+
+    const svg = document.getElementById('splitPie');
+    svg.innerHTML = `
+      <path d="${arc(myPct,  gap / 2)}"       fill="${myColor}"  opacity="0.92"/>
+      <path d="${arc(herPct, myPct / 100 * 2 * Math.PI + gap / 2)}" fill="${herColor}" opacity="0.92"/>
+      <text x="${cx}" y="${cy - 6}"  text-anchor="middle" font-size="18" font-weight="700" fill="#f1f5f9">${myPct}%</text>
+      <text x="${cx}" y="${cy + 13}" text-anchor="middle" font-size="10" fill="#94a3b8">Mein Anteil</text>
+    `;
+
+    document.getElementById('splitLegend').innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:14px;height:14px;border-radius:4px;background:${myColor};flex-shrink:0;"></div>
+        <div>
+          <div style="font-size:0.82rem;color:#94a3b8;">Ich (${myPct}%)</div>
+          <div style="font-size:1.3rem;font-weight:700;color:${myColor};">${fmt(myAmt)} €</div>
+          <div style="font-size:0.75rem;color:#64748b;">von ${fmt(totalCost)} € Gesamtkosten</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:14px;height:14px;border-radius:4px;background:${herColor};flex-shrink:0;"></div>
+        <div>
+          <div style="font-size:0.82rem;color:#94a3b8;">Schwester (${herPct}%)</div>
+          <div style="font-size:1.3rem;font-weight:700;color:${herColor};">${fmt(herAmt)} €</div>
+          <div style="font-size:0.75rem;color:#64748b;">von ${fmt(totalCost)} € Gesamtkosten</div>
+        </div>
+      </div>
+      <div style="background:#0f172a;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#64748b;">
+        Aufteilung ändern → <strong style="color:#cbd5e1;">Einstellungen → Mein Anteil (%)</strong>
       </div>
     `;
   }
