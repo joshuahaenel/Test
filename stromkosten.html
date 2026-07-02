@@ -244,6 +244,48 @@
 
     .akonto-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-top: 4px; }
 
+    /* ── Backup bar ── */
+    .backup-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+
+    .backup-bar .backup-info {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .backup-bar .backup-info strong { color: #f1f5f9; font-size: 0.9rem; }
+    .backup-bar .backup-info p      { color: #64748b; font-size: 0.77rem; margin-top: 2px; }
+
+    .btn-export {
+      background: #16a34a;
+    }
+
+    .btn-export:hover { filter: brightness(1.15); }
+
+    .btn-import {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      font-size: 0.88rem;
+      padding: 9px 16px;
+    }
+
+    .btn-import:hover { border-color: #6366f1; color: #a5b4fc; filter: none; }
+
+    .backup-status {
+      font-size: 0.78rem;
+      color: #4ade80;
+      display: none;
+    }
+
     @media (max-width: 560px) {
       .entry-row, .akonto-form { grid-template-columns: 1fr; }
       .kpi .value { font-size: 1.2rem; }
@@ -275,6 +317,18 @@
     <button class="tab-btn" onclick="switchTab('gas')" id="tab-gas">
       <span class="tab-icon">🔥</span> Gas
     </button>
+  </div>
+
+  <!-- Backup-Leiste (immer sichtbar) -->
+  <div class="backup-bar">
+    <div class="backup-info">
+      <strong>💾 Datensicherung</strong>
+      <p>Zuletzt gespeichert: <span id="lastSaveInfo">–</span></p>
+    </div>
+    <span class="backup-status" id="backupStatus">✓ Gespeichert!</span>
+    <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 Importieren</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+    <button class="btn-export" onclick="exportData()">⬇ Exportieren</button>
   </div>
 
   <!-- Dashboard (wird per JS eingeblendet) -->
@@ -426,6 +480,7 @@
     states[activeTab].basePrice      = parseFloat(document.getElementById('basePrice').value)       || cfg.defaults.basePrice;
     states[activeTab].monthlyAkonto  = parseFloat(document.getElementById('monthlyAkonto').value)   || cfg.defaults.monthlyAkonto;
     localStorage.setItem(STORE, JSON.stringify(states));
+    updateLastSaveInfo();
   }
 
   function saveAndRender() { save(); render(); }
@@ -900,11 +955,75 @@
     el.style.display = 'block';
   }
 
+  // ── Export / Import ────────────────────────────────────────────────
+  function exportData() {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: states
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+    a.href     = url;
+    a.download = `energie-tracker-backup-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showBackupStatus('⬇ Backup heruntergeladen!');
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const payload = JSON.parse(e.target.result);
+        const imported = payload.data || payload;
+        let ok = false;
+        Object.keys(UTILS).forEach(k => {
+          if (imported[k]) {
+            states[k] = { ...states[k], ...imported[k] };
+            if (!states[k].payments) states[k].payments = [];
+            ok = true;
+          }
+        });
+        if (!ok) throw new Error('Unbekanntes Format');
+        localStorage.setItem(STORE, JSON.stringify(states));
+        updateLastSaveInfo();
+        const cur = activeTab;
+        switchTab('dashboard');
+        if (cur !== 'dashboard') switchTab(cur);
+        showBackupStatus('✓ Import erfolgreich!');
+      } catch {
+        alert('Fehler: Die Datei konnte nicht gelesen werden. Bitte eine gültige Backup-Datei auswählen.');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  function showBackupStatus(msg) {
+    const el = document.getElementById('backupStatus');
+    el.textContent = msg;
+    el.style.display = 'inline';
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
+
+  function updateLastSaveInfo() {
+    const raw = localStorage.getItem(STORE);
+    if (!raw) { document.getElementById('lastSaveInfo').textContent = 'Noch nie (nur Browser-Cache)'; return; }
+    document.getElementById('lastSaveInfo').textContent = 'Browser-Cache (jetzt exportieren zum Sichern)';
+  }
+
   // ── Init ──────────────────────────────────────────────────────────
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('entryDate').value = today;
   document.getElementById('akDate').value    = today;
   loadAll();
+  updateLastSaveInfo();
   switchTab('dashboard');
 </script>
 </body>
