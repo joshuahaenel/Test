@@ -354,7 +354,7 @@
         <input type="number" id="monthlyAkonto" step="1" min="0" onchange="saveAndRender()" />
       </div>
       <div>
-        <label>Mein Anteil (%)</label>
+        <label>Joshuas Anteil (%)</label>
         <input type="number" id="myShare" step="1" min="0" max="100" onchange="saveAndRender()" />
       </div>
     </div>
@@ -639,8 +639,8 @@
           ` : '<div style="color:#475569;font-size:0.82rem;">Noch keine Daten erfasst</div>'}
           ${wd.length ? `
             <div style="display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:0.8rem;">
-              <div><span style="color:#94a3b8;">Ich (${s.myShare ?? 50}%): </span><strong style="color:${cfg.accent}">${fmt(totalCost * (s.myShare ?? 50) / 100)} €</strong></div>
-              <div><span style="color:#94a3b8;">Schwester (${100 - (s.myShare ?? 50)}%): </span><strong style="color:#e879f9">${fmt(totalCost * (100 - (s.myShare ?? 50)) / 100)} €</strong></div>
+              <div><span style="color:#94a3b8;">Joshua (${s.myShare ?? 50}%): </span><strong style="color:${cfg.accent}">${fmt(totalCost * (s.myShare ?? 50) / 100)} €</strong></div>
+              <div><span style="color:#94a3b8;">Louisa (${100 - (s.myShare ?? 50)}%): </span><strong style="color:#e879f9">${fmt(totalCost * (100 - (s.myShare ?? 50)) / 100)} €</strong></div>
             </div>` : ''}
           ${lastEntry ? `<div style="font-size:0.78rem;color:#64748b;margin-top:8px;">Letzter Zählerstand: <span style="color:#cbd5e1">${fmt(lastEntry.value,2)} ${cfg.unit}</span></div>` : ''}
         </div>
@@ -836,14 +836,14 @@
       <path d="${arc(myPct,  gap / 2)}"       fill="${myColor}"  opacity="0.92"/>
       <path d="${arc(herPct, myPct / 100 * 2 * Math.PI + gap / 2)}" fill="${herColor}" opacity="0.92"/>
       <text x="${cx}" y="${cy - 6}"  text-anchor="middle" font-size="18" font-weight="700" fill="#f1f5f9">${myPct}%</text>
-      <text x="${cx}" y="${cy + 13}" text-anchor="middle" font-size="10" fill="#94a3b8">Mein Anteil</text>
+      <text x="${cx}" y="${cy + 13}" text-anchor="middle" font-size="10" fill="#94a3b8">Joshua</text>
     `;
 
     document.getElementById('splitLegend').innerHTML = `
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="width:14px;height:14px;border-radius:4px;background:${myColor};flex-shrink:0;"></div>
         <div>
-          <div style="font-size:0.82rem;color:#94a3b8;">Ich (${myPct}%)</div>
+          <div style="font-size:0.82rem;color:#94a3b8;">Joshua (${myPct}%)</div>
           <div style="font-size:1.3rem;font-weight:700;color:${myColor};">${fmt(myAmt)} €</div>
           <div style="font-size:0.75rem;color:#64748b;">von ${fmt(totalCost)} € Gesamtkosten</div>
         </div>
@@ -851,13 +851,13 @@
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="width:14px;height:14px;border-radius:4px;background:${herColor};flex-shrink:0;"></div>
         <div>
-          <div style="font-size:0.82rem;color:#94a3b8;">Schwester (${herPct}%)</div>
+          <div style="font-size:0.82rem;color:#94a3b8;">Louisa (${herPct}%)</div>
           <div style="font-size:1.3rem;font-weight:700;color:${herColor};">${fmt(herAmt)} €</div>
           <div style="font-size:0.75rem;color:#64748b;">von ${fmt(totalCost)} € Gesamtkosten</div>
         </div>
       </div>
       <div style="background:#0f172a;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#64748b;">
-        Aufteilung ändern → <strong style="color:#cbd5e1;">Einstellungen → Mein Anteil (%)</strong>
+        Aufteilung ändern → <strong style="color:#cbd5e1;">Einstellungen → Joshuas Anteil (%)</strong>
       </div>
     `;
   }
