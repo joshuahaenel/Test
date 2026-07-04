@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jarvis</title>
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot" id="connection-dot" title="Verbindungsstatus"></span>
+      <span class="brand-name">Jarvis</span>
+    </div>
+    <div class="clock" id="clock"></div>
+  </header>
+
+  <main class="layout">
+    <section class="chat-panel" aria-label="Chat mit Jarvis">
+      <div class="messages" id="messages"></div>
+      <form class="composer" id="composer">
+        <button type="button" id="mic-button" class="icon-button" title="Spracheingabe" aria-label="Spracheingabe">🎤</button>
+        <input type="text" id="message-input" placeholder="Frag Jarvis etwas..." autocomplete="off" />
+        <button type="submit" class="icon-button primary" title="Senden" aria-label="Senden">➤</button>
+        <button type="button" id="speak-toggle" class="icon-button" title="Antworten vorlesen" aria-label="Auto-Speak umschalten">🔊</button>
+      </form>
+    </section>
+
+    <aside class="widgets">
+      <section class="widget" id="weather-widget">
+        <h2>Wetter</h2>
+        <div class="widget-body">Lade...</div>
+      </section>
+
+      <section class="widget" id="health-widget">
+        <h2>Health</h2>
+        <div class="widget-body">Lade...</div>
+      </section>
+
+      <section class="widget" id="screen-time-widget">
+        <h2>Bildschirmzeit</h2>
+        <div class="widget-body">Lade...</div>
+        <form class="widget-form" id="screen-time-form">
+          <input type="number" min="0" id="screen-time-minutes" placeholder="Minuten heute" required />
+          <button type="submit">Eintragen</button>
+        </form>
+      </section>
+
+      <section class="widget" id="training-widget">
+        <h2>Trainingsplan</h2>
+        <div class="widget-body">Lade...</div>
+      </section>
+
+      <section class="widget" id="calendar-widget">
+        <h2>Kalender</h2>
+        <div class="widget-body">Lade...</div>
+      </section>
+
+      <section class="widget" id="youtube-widget">
+        <h2>Now Playing</h2>
+        <div class="widget-body">
+          <div class="youtube-empty" id="youtube-empty">Noch kein Video ausgewählt.</div>
+          <iframe id="youtube-frame" class="youtube-frame hidden" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </section>
+
+      <section class="widget" id="settings-widget">
+        <h2>Einstellungen</h2>
+        <div class="widget-body">
+          <label>Standardstadt
+            <input type="text" id="settings-location" />
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="settings-auto-speak" />
+            Antworten automatisch vorlesen
+          </label>
+          <p class="hint" id="settings-model"></p>
+          <p class="hint">
+            Health-Auto-Export-Webhook: <code>POST /api/health/webhook</code>
+            mit Header <code>X-Webhook-Token</code> (siehe <code>backend/.env</code>).
+          </p>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script src="/js/app.js" type="module"></script>
+</body>
+</html>

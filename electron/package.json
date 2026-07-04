@@ -1,0 +1,13 @@
+{
+  "name": "jarvis-desktop",
+  "version": "0.1.0",
+  "description": "Electron shell for the Jarvis desktop app; spawns the local FastAPI backend and displays its dashboard.",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}
