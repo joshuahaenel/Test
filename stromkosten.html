@@ -346,8 +346,12 @@
         <input type="number" id="pricePerUnit" step="0.01" min="0" onchange="saveAndRender()" />
       </div>
       <div>
-        <label>Grundpreis (€/Monat)</label>
-        <input type="number" id="basePrice" step="0.01" min="0" onchange="saveAndRender()" />
+        <label>Grundpreis (€/Tag)</label>
+        <input type="number" id="basePrice" step="0.0001" min="0" onchange="saveAndRender()" />
+      </div>
+      <div>
+        <label>Vertragsbeginn</label>
+        <input type="date" id="contractStart" onchange="saveAndRender()" />
       </div>
       <div>
         <label>Abschlag (€/Monat)</label>
@@ -478,9 +482,9 @@
 <script>
   // ── Utility config ─────────────────────────────────────────────────
   const UTILS = {
-    strom:  { label: 'Strom',  icon: '⚡', unit: 'kWh', accent: '#6366f1', accentLight: '#818cf8', priceLabel: 'Arbeitspreis (ct/kWh)', defaults: { pricePerUnit: 30.60, basePrice: 17.90, monthlyAkonto: 80, myShare: 60 }, badgeLow: 25, badgeMid: 50 },
-    wasser: { label: 'Wasser', icon: '💧', unit: 'm³',  accent: '#06b6d4', accentLight: '#22d3ee', priceLabel: 'Preis (ct/m³)',          defaults: { pricePerUnit: 200,   basePrice: 10,    monthlyAkonto: 30, myShare: 50 }, badgeLow: 1,  badgeMid: 3  },
-    gas:    { label: 'Gas',    icon: '🔥', unit: 'm³',  accent: '#f59e0b', accentLight: '#fbbf24', priceLabel: 'Arbeitspreis (ct/kWh)',  defaults: { pricePerUnit: 8,     basePrice: 12,    monthlyAkonto: 60, myShare: 50, conversionFactor: 10.9712178 }, badgeLow: 10, badgeMid: 25 },
+    strom:  { label: 'Strom',  icon: '⚡', unit: 'kWh', accent: '#6366f1', accentLight: '#818cf8', priceLabel: 'Arbeitspreis (ct/kWh)', defaults: { pricePerUnit: 30.60, basePrice: 0.5967, monthlyAkonto: 80, myShare: 60, contractStart: '' }, badgeLow: 25, badgeMid: 50 },
+    wasser: { label: 'Wasser', icon: '💧', unit: 'm³',  accent: '#06b6d4', accentLight: '#22d3ee', priceLabel: 'Preis (ct/m³)',          defaults: { pricePerUnit: 182,   basePrice: 0.0671, monthlyAkonto: 30, myShare: 50, contractStart: '' }, badgeLow: 1,  badgeMid: 3  },
+    gas:    { label: 'Gas',    icon: '🔥', unit: 'm³',  accent: '#f59e0b', accentLight: '#fbbf24', priceLabel: 'Arbeitspreis (ct/kWh)',  defaults: { pricePerUnit: 8,     basePrice: 0.3941, monthlyAkonto: 60, myShare: 50, contractStart: '', conversionFactor: 10.9712178 }, badgeLow: 10, badgeMid: 25 },
   };
 
   const STORE = 'energietracker_v1';
@@ -499,6 +503,7 @@
     states[activeTab].basePrice      = parseFloat(document.getElementById('basePrice').value)       || cfg.defaults.basePrice;
     states[activeTab].monthlyAkonto  = parseFloat(document.getElementById('monthlyAkonto').value)   || cfg.defaults.monthlyAkonto;
     states[activeTab].myShare        = Math.min(100, Math.max(0, parseFloat(document.getElementById('myShare').value) || cfg.defaults.myShare));
+    states[activeTab].contractStart  = document.getElementById('contractStart').value || '';
     if (cfg.defaults.conversionFactor != null)
       states[activeTab].conversionFactor = parseFloat(document.getElementById('conversionFactor').value) || cfg.defaults.conversionFactor;
     localStorage.setItem(STORE, JSON.stringify(states));
@@ -566,10 +571,9 @@
       const usage    = prev ? e.value - prev.value : null;
       const kwh      = usage != null ? usage * factor : null;
       const unitCost = s.pricePerUnit / 100;
-      const baseDay  = s.basePrice / 30;
       const workCost = kwh   != null ? kwh  * unitCost : null;
-      const baseCost = days  != null ? days * baseDay  : null;
-      const total    = workCost != null ? workCost + baseCost : null;
+      const baseCost = days  != null ? periodBaseCost(days, s) : null;
+      const total    = workCost != null ? workCost + (baseCost ?? 0) : null;
       return { ...e, days, usage, kwh, workCost, baseCost, total };
     });
   }
@@ -592,7 +596,7 @@
       const totalPaid   = s.payments.reduce((a, p) => a + p.amount, 0);
       const avgPerWeek  = totalDays > 0 ? totalUsage / totalDays * 7 : 0;
       const factor      = s.conversionFactor ?? cfg.defaults.conversionFactor ?? 1;
-      const projection  = avgPerWeek * factor * 52 * (s.pricePerUnit / 100) + s.basePrice * 12;
+      const projection  = avgPerWeek * factor * 52 * (s.pricePerUnit / 100) + s.basePrice * 365;
       const balance     = totalPaid - totalCost;
       const lastEntry   = rows[rows.length - 1];
 
@@ -702,6 +706,7 @@
     document.getElementById('basePrice').value     = s.basePrice;
     document.getElementById('monthlyAkonto').value = s.monthlyAkonto;
     document.getElementById('myShare').value       = s.myShare ?? cfg.defaults.myShare;
+    document.getElementById('contractStart').value = s.contractStart || '';
     const hasFactor = cfg.defaults.conversionFactor != null;
     document.getElementById('conversionFactorWrap').style.display = hasFactor ? '' : 'none';
     if (hasFactor) document.getElementById('conversionFactor').value = s.conversionFactor ?? cfg.defaults.conversionFactor;
@@ -724,6 +729,21 @@
     return `KW ${week}/${d.getFullYear()}`;
   }
 
+  // Grundkosten: Vertragsbeginn → heute × Tagessatz
+  function runningBaseCost(s) {
+    if (!s.contractStart) return null;
+    const start = new Date(s.contractStart + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const days = Math.max(0, (today - start) / 86400000);
+    return days * s.basePrice;
+  }
+
+  // Anteilige Grundkosten für eine Messperiode (für Tabellenspalte)
+  function periodBaseCost(days, s) {
+    return days * s.basePrice;
+  }
+
   function computedRows() {
     const s      = states[activeTab];
     const cfg    = UTILS[activeTab];
@@ -735,10 +755,9 @@
       const usage    = prev ? e.value - prev.value : null;
       const kwh      = usage != null ? usage * factor : null;
       const unitCost = s.pricePerUnit / 100;
-      const baseDay  = s.basePrice / 30;
       const workCost = kwh   != null ? kwh  * unitCost : null;
-      const baseCost = days  != null ? days * baseDay  : null;
-      const total    = workCost != null ? workCost + baseCost : null;
+      const baseCost = days  != null ? periodBaseCost(days, s) : null;
+      const total    = workCost != null ? workCost + (baseCost ?? 0) : null;
       return { ...e, days, usage, kwh, workCost, baseCost, total };
     });
   }
@@ -780,9 +799,15 @@
     const avgPerWeek  = totalDays > 0 ? totalUsage / totalDays * 7 : 0;
     const lastEntry   = rows[rows.length - 1];
     const factor      = s.conversionFactor ?? cfg.defaults.conversionFactor ?? 1;
-    const projection  = avgPerWeek * factor * 52 * (s.pricePerUnit / 100) + s.basePrice * 12;
+    const rbc         = runningBaseCost(s);  // Grundkosten seit Vertragsbeginn
+    const totalActual = totalCost + (rbc ?? 0); // Verbrauch + Grundkosten gesamt
+    const projection  = avgPerWeek * factor * 52 * (s.pricePerUnit / 100) + s.basePrice * 365;
     const akontoYear  = s.monthlyAkonto * 12;
     const diff        = projection - akontoYear;
+
+    const contractDays = s.contractStart
+      ? Math.max(0, Math.round((new Date() - new Date(s.contractStart + 'T00:00:00')) / 86400000))
+      : null;
 
     grid.innerHTML = `
       <div class="kpi">
@@ -798,8 +823,26 @@
       <div class="kpi">
         <div class="value">${fmt(totalCost)}</div>
         <div class="unit">€</div>
-        <div class="lbl">Kosten (erfasst)</div>
+        <div class="lbl">Verbrauchskosten</div>
       </div>
+      ${rbc != null ? `
+      <div class="kpi" style="border-color:var(--accent)33">
+        <div class="value">${fmt(rbc)}</div>
+        <div class="unit">€ (${contractDays} Tage)</div>
+        <div class="lbl">Grundkosten seit Vertragsbeginn</div>
+      </div>
+      <div class="kpi" style="border-color:var(--accent)55">
+        <div class="value">${fmt(totalActual)}</div>
+        <div class="unit">€ gesamt</div>
+        <div class="lbl">Gesamtkosten aktuell</div>
+      </div>
+      ` : `
+      <div class="kpi">
+        <div class="value" style="color:#64748b;font-size:1rem;">Kein Datum</div>
+        <div class="unit">€</div>
+        <div class="lbl">Grundkosten (Vertragsbeginn eintragen)</div>
+      </div>
+      `}
       <div class="kpi">
         <div class="value">${fmt(projection)}</div>
         <div class="unit">€/Jahr</div>
@@ -880,17 +923,21 @@
   }
 
   function renderBalance(rows, s) {
-    const withDelta = rows.filter(r => r.usage != null);
-    const totalCost = withDelta.reduce((a, r) => a + r.total, 0);
-    const totalPaid = s.payments.reduce((a, p) => a + p.amount, 0);
-    const balance   = totalPaid - totalCost;
+    const withDelta  = rows.filter(r => r.usage != null);
+    const workTotal  = withDelta.reduce((a, r) => a + r.workCost, 0);
+    const rbc        = runningBaseCost(s) ?? 0;
+    const totalCost  = workTotal + rbc;
+    const totalPaid  = s.payments.reduce((a, p) => a + p.amount, 0);
+    const balance    = totalPaid - totalCost;
 
     document.getElementById('balanceValue').textContent   = fmt(Math.abs(balance)) + ' €';
     document.getElementById('balanceValue').style.color   = balance >= 0 ? '#4ade80' : '#f87171';
     document.getElementById('balanceLabel').textContent   = balance >= 0 ? 'Guthaben (Überzahlung)' : 'Rückstand (Nachzahlung droht)';
     document.getElementById('balanceDetails').innerHTML = `
+      <div>Verbrauchskosten: <span>${fmt(workTotal)} €</span></div>
+      <div>Grundkosten (${s.contractStart ? Math.max(0,Math.round((new Date()-new Date(s.contractStart+'T00:00:00'))/86400000))+' Tage' : 'kein Datum'}): <span>${fmt(rbc)} €</span></div>
+      <div>Gesamtkosten: <span>${fmt(totalCost)} €</span></div>
       <div>Gezahlte Abschläge: <span>${fmt(totalPaid)} €</span></div>
-      <div>Aufgelaufene Kosten: <span>${fmt(totalCost)} €</span></div>
       <div>Differenz: <span style="color:${balance >= 0 ? '#4ade80' : '#f87171'}">${balance >= 0 ? '+' : ''}${fmt(balance)} €</span></div>
     `;
   }
