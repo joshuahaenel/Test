@@ -795,12 +795,12 @@
     }
     const totalUsage  = withDelta.reduce((a, r) => a + r.usage, 0);
     const totalDays   = withDelta.reduce((a, r) => a + r.days,  0);
-    const totalCost   = withDelta.reduce((a, r) => a + r.total, 0);
+    const workCostTotal = withDelta.reduce((a, r) => a + r.workCost, 0);
     const avgPerWeek  = totalDays > 0 ? totalUsage / totalDays * 7 : 0;
     const lastEntry   = rows[rows.length - 1];
     const factor      = s.conversionFactor ?? cfg.defaults.conversionFactor ?? 1;
     const rbc         = runningBaseCost(s);  // Grundkosten seit Vertragsbeginn
-    const totalActual = totalCost + (rbc ?? 0); // Verbrauch + Grundkosten gesamt
+    const totalActual = workCostTotal + (rbc ?? 0); // Verbrauch + Grundkosten gesamt
     const projection  = avgPerWeek * factor * 52 * (s.pricePerUnit / 100) + s.basePrice * 365;
     const akontoYear  = s.monthlyAkonto * 12;
     const diff        = projection - akontoYear;
@@ -821,7 +821,7 @@
         <div class="lbl">Ø Wochenverbrauch</div>
       </div>
       <div class="kpi">
-        <div class="value">${fmt(totalCost)}</div>
+        <div class="value">${fmt(workCostTotal)}</div>
         <div class="unit">€</div>
         <div class="lbl">Verbrauchskosten</div>
       </div>
@@ -868,7 +868,7 @@
     if (withDelta.length === 0) { card.style.display = 'none'; return; }
     card.style.display = 'block';
 
-    const totalCost = withDelta.reduce((a, r) => a + r.total, 0);
+    const totalCost = withDelta.reduce((a, r) => a + r.workCost, 0) + (runningBaseCost(s) ?? 0);
     const myPct     = (s.myShare ?? 60);
     const herPct    = 100 - myPct;
     const myAmt     = totalCost * myPct / 100;
